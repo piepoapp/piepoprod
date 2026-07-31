@@ -329,16 +329,27 @@ export function AppointmentsList({ appointments }: AppointmentsListProps) {
         </div>
 
         {/* Appointments */}
-        {appointments.map((apt) => (
-          <AppointmentRow
-            key={apt.id}
-            appointment={apt}
-            onView={(id) => {
-              const found = appointments.find((a) => a.id === id);
-              if (found) setModalAppointment(found);
-            }}
-          />
-        ))}
+        {appointments.length === 0 ? (
+          <div className="flex flex-col items-center gap-[4px] py-[24px]">
+            <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#939393]">
+              Nenhum atendimento agendado
+            </span>
+            <span className="font-['Geist',sans-serif] font-normal text-[13px] text-[#c4c4c4]">
+              Suas próximas sessões vão aparecer aqui
+            </span>
+          </div>
+        ) : (
+          appointments.map((apt) => (
+            <AppointmentRow
+              key={apt.id}
+              appointment={apt}
+              onView={(id) => {
+                const found = appointments.find((a) => a.id === id);
+                if (found) setModalAppointment(found);
+              }}
+            />
+          ))
+        )}
       </div>
 
       {/* Modal */}

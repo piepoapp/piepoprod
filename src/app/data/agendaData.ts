@@ -1,5 +1,3 @@
-import { patients, type Patient } from "./mockData";
-
 export type SessionStatus =
   | "confirmed"
   | "pending"
@@ -114,96 +112,68 @@ export function addDays(d: Date, n: number) {
   return r;
 }
 
-function buildMockSessions(): Session[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const monday = startOfWeek(today);
-  const sessions: Session[] = [];
-
-  type Slot = {
-    patientIdx: number;
-    dayOffset: number;
-    start: string;
-    end: string;
-    status: SessionStatus;
-    modality: SessionModality;
-    payment: SessionPayment;
-    amount: number;
-    recurrence: Session["recurrence"];
-    notes?: string;
-  };
-
-  const slots: Slot[] = [
-    // Previous week
-    { patientIdx: 0, dayOffset: -7, start: "09:00", end: "09:50", status: "confirmed", modality: "online", payment: "paid", amount: 220, recurrence: "Semanal" },
-    { patientIdx: 1, dayOffset: -6, start: "10:00", end: "10:50", status: "confirmed", modality: "online", payment: "paid", amount: 200, recurrence: "Semanal" },
-    { patientIdx: 4, dayOffset: -5, start: "14:00", end: "14:50", status: "cancelled", modality: "presencial", payment: "pending", amount: 250, recurrence: "Semanal" },
-    // This week
-    { patientIdx: 0, dayOffset: 0, start: "09:00", end: "09:50", status: "confirmed", modality: "online", payment: "paid", amount: 220, recurrence: "Semanal", notes: "Revisar evolução do mês" },
-    { patientIdx: 5, dayOffset: 0, start: "10:30", end: "11:20", status: "first", modality: "presencial", payment: "pending", amount: 250, recurrence: "Única", notes: "Primeira consulta — anamnese inicial" },
-    { patientIdx: 6, dayOffset: 0, start: "14:00", end: "14:50", status: "confirmed", modality: "online", payment: "covenio", amount: 180, recurrence: "Semanal" },
-    { patientIdx: 10, dayOffset: 0, start: "16:00", end: "16:50", status: "pending", modality: "online", payment: "pending", amount: 220, recurrence: "Semanal" },
-    { patientIdx: 1, dayOffset: 1, start: "09:00", end: "09:50", status: "confirmed", modality: "online", payment: "paid", amount: 200, recurrence: "Semanal" },
-    { patientIdx: 2, dayOffset: 1, start: "11:00", end: "11:50", status: "confirmed", modality: "presencial", payment: "paid", amount: 240, recurrence: "Quinzenal" },
-    { patientIdx: 4, dayOffset: 1, start: "15:00", end: "15:50", status: "pending", modality: "presencial", payment: "pending", amount: 250, recurrence: "Semanal" },
-    { patientIdx: 11, dayOffset: 2, start: "08:00", end: "08:50", status: "confirmed", modality: "online", payment: "paid", amount: 200, recurrence: "Semanal" },
-    { patientIdx: 3, dayOffset: 2, start: "10:00", end: "10:50", status: "confirmed", modality: "online", payment: "paid", amount: 220, recurrence: "Semanal" },
-    { patientIdx: 6, dayOffset: 2, start: "14:00", end: "14:50", status: "first", modality: "online", payment: "pending", amount: 250, recurrence: "Única", notes: "Indicação do Dr. Vinícius" },
-    { patientIdx: 0, dayOffset: 3, start: "09:00", end: "09:50", status: "confirmed", modality: "online", payment: "paid", amount: 220, recurrence: "Semanal" },
-    { patientIdx: 1, dayOffset: 3, start: "11:00", end: "11:50", status: "confirmed", modality: "online", payment: "overdue", amount: 200, recurrence: "Semanal", notes: "2 sessões em atraso" },
-    { patientIdx: 5, dayOffset: 3, start: "13:00", end: "14:00", status: "blocked", modality: "presencial", payment: "free", amount: 0, recurrence: "Única", notes: "Almoço bloqueado" },
-    { patientIdx: 2, dayOffset: 3, start: "16:00", end: "16:50", status: "confirmed", modality: "presencial", payment: "paid", amount: 240, recurrence: "Quinzenal" },
-    { patientIdx: 10, dayOffset: 4, start: "09:00", end: "09:50", status: "confirmed", modality: "online", payment: "paid", amount: 220, recurrence: "Semanal" },
-    { patientIdx: 4, dayOffset: 4, start: "10:00", end: "10:50", status: "confirmed", modality: "presencial", payment: "pending", amount: 250, recurrence: "Semanal" },
-    { patientIdx: 11, dayOffset: 4, start: "15:00", end: "15:50", status: "pending", modality: "online", payment: "pending", amount: 200, recurrence: "Semanal" },
-    // Next week
-    { patientIdx: 0, dayOffset: 7, start: "09:00", end: "09:50", status: "confirmed", modality: "online", payment: "pending", amount: 220, recurrence: "Semanal" },
-    { patientIdx: 1, dayOffset: 8, start: "11:00", end: "11:50", status: "confirmed", modality: "online", payment: "pending", amount: 200, recurrence: "Semanal" },
-    { patientIdx: 3, dayOffset: 9, start: "10:00", end: "10:50", status: "pending", modality: "online", payment: "pending", amount: 220, recurrence: "Semanal" },
-    { patientIdx: 5, dayOffset: 10, start: "16:00", end: "16:50", status: "confirmed", modality: "presencial", payment: "pending", amount: 250, recurrence: "Semanal" },
-  ];
-
-  slots.forEach((slot, idx) => {
-    const p: Patient | undefined = patients[slot.patientIdx];
-    if (!p) return;
-    const date = addDays(monday, slot.dayOffset);
-    sessions.push({
-      id: `s${idx + 1}`,
-      patientId: p.id,
-      patientName: p.name,
-      initials: p.initials,
-      date: toISODate(date),
-      startTime: slot.start,
-      endTime: slot.end,
-      status: slot.status,
-      modality: slot.modality,
-      payment: slot.payment,
-      amount: slot.amount,
-      recurrence: slot.recurrence,
-      notes: slot.notes,
-    });
-  });
-
-  return sessions;
-}
-
-export const sessions: Session[] = buildMockSessions();
-
-export function getSessionsByDate(dateISO: string) {
+export function getSessionsByDate(sessions: Session[], dateISO: string) {
   return sessions
     .filter((s) => s.date === dateISO)
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 }
 
-export function getSessionsByWeek(weekStart: Date) {
+export function getSessionsByWeek(sessions: Session[], weekStart: Date) {
   const start = toISODate(weekStart);
   const end = toISODate(addDays(weekStart, 6));
   return sessions.filter((s) => s.date >= start && s.date <= end);
 }
 
-export function getSessionsByMonth(year: number, month: number) {
+export function getSessionsByMonth(sessions: Session[], year: number, month: number) {
   const prefix = `${year}-${pad(month + 1)}`;
   return sessions.filter((s) => s.date.startsWith(prefix));
+}
+
+export function expandRecurrence(startISO: string, recurrence: Session["recurrence"]): string[] {
+  const start = fromISODate(startISO);
+  const out: string[] = [];
+  const push = (d: Date) => out.push(toISODate(d));
+
+  if (recurrence === "Única") {
+    push(start);
+    return out;
+  }
+
+  if (recurrence === "Diária") {
+    for (let i = 0; i < 28; i++) push(addDays(start, i));
+    return out;
+  }
+
+  if (recurrence === "Seg a sex") {
+    let added = 0;
+    for (let i = 0; added < 40 && i < 90; i++) {
+      const d = addDays(start, i);
+      const dow = d.getDay();
+      if (dow !== 0 && dow !== 6) {
+        push(d);
+        added++;
+      }
+    }
+    return out;
+  }
+
+  if (recurrence === "Semanal") {
+    for (let i = 0; i < 12; i++) push(addDays(start, i * 7));
+    return out;
+  }
+
+  if (recurrence === "Quinzenal") {
+    for (let i = 0; i < 8; i++) push(addDays(start, i * 14));
+    return out;
+  }
+
+  // Mensal
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(start);
+    d.setMonth(d.getMonth() + i);
+    push(d);
+  }
+  return out;
 }
 
 export function timeToMinutes(t: string) {

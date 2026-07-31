@@ -5,14 +5,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar as CalendarPicker } from "../ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { format, parse } from "date-fns";
-import { patients } from "../../data/mockData";
-import { sessions, type Session } from "../../data/agendaData";
+import type { Patient } from "../../data/mockData";
+import { listPatients } from "../../../lib/api/patients";
+import type { Session } from "../../data/agendaData";
 
 interface Props {
   open: boolean;
   initialDate?: string;
   initialTime?: string;
   initialPatientId?: string;
+  sessions: Session[];
   onClose: () => void;
   onSave: (session: Omit<Session, "id">) => void;
 }
@@ -31,9 +33,11 @@ export function NewSessionModal({
   initialDate,
   initialTime,
   initialPatientId,
+  sessions,
   onClose,
   onSave,
 }: Props) {
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [patientId, setPatientId] = useState(initialPatientId ?? "");
   const [date, setDate] = useState(initialDate ?? "");
   const [time, setTime] = useState(initialTime ?? "09:00");
@@ -50,6 +54,12 @@ export function NewSessionModal({
   const [recurrence, setRecurrence] = useState<(typeof recurrences)[number]>("Semanal");
   const [amount, setAmount] = useState("220");
   const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    listPatients()
+      .then(setPatients)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (open) {

@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
+import { toast } from "sonner";
 import {
   CaretLeft,
   CaretRight,
@@ -15,19 +16,27 @@ import {
 } from "@phosphor-icons/react";
 import {
   addDays,
-  fromISODate,
   monthLabels,
   startOfWeek,
   toISODate,
   weekDayLabels,
   getSessionsByDate,
   getSessionsByWeek,
+  expandRecurrence,
   statusMeta,
-  sessions as allSessions,
   type Session,
   type SessionStatus,
 } from "../data/agendaData";
-import { patients } from "../data/mockData";
+import type { Patient } from "../data/mockData";
+import { listPatients } from "../../lib/api/patients";
+import {
+  listSessions,
+  createSession,
+  createSessions,
+  updateSessionStatus,
+  deleteSession,
+} from "../../lib/api/sessions";
+import { useAuth } from "../../lib/auth/AuthProvider";
 import { WeekView } from "./agenda/WeekView";
 import { DayView } from "./agenda/DayView";
 import { MonthView } from "./agenda/MonthView";
@@ -46,9 +55,22 @@ const filterDefs: { value: SessionStatus | "all"; label: string }[] = [
 ];
 
 export function AgendaPage() {
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const novoPacienteId = searchParams.get("novoPaciente");
+
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const novoPaciente = patients.find((p) => p.id === novoPacienteId);
+
+  useEffect(() => {
+    listSessions()
+      .then(setSessions)
+      .catch(() => toast.error("Não foi possível carregar a agenda."));
+    listPatients()
+      .then(setPatients)
+      .catch(() => {});
+  }, []);
 
   const [view, setView] = useState<ViewMode>("week");
   const [cursor, setCursor] = useState(() => new Date());
@@ -102,25 +124,41 @@ export function AgendaPage() {
     setSearchParams(searchParams, { replace: true });
   }
 
-  const [, forceUpdate] = useState(0);
-
-  function handleSaveNew(session: Omit<Session, "id">) {
-    allSessions.push({ ...session, id: `s-${Date.now()}` });
-    forceUpdate((v) => v + 1);
+  async function handleSaveNew(session: Omit<Session, "id">) {
+    if (!user) return;
+    const optimisticId = `temp-${Date.now()}`;
+    setSessions((prev) => [...prev, { ...session, id: optimisticId }]);
     if (novoPaciente) dismissBanner();
+    try {
+      const created = await createSession(session, user.id);
+      setSessions((prev) => prev.map((s) => (s.id === optimisticId ? created : s)));
+    } catch {
+      setSessions((prev) => prev.filter((s) => s.id !== optimisticId));
+      toast.error("Não foi possível salvar a sessão.");
+    }
   }
 
   function handleCloseNew() {
     setNewSessionState({ open: false });
   }
 
-  function handleSaveBlock(block: Omit<Session, "id">) {
+  async function handleSaveBlock(block: Omit<Session, "id">) {
+    if (!user) return;
     const dates = expandRecurrence(block.date, block.recurrence);
-    const baseId = Date.now();
-    dates.forEach((d, idx) => {
-      allSessions.push({ ...block, date: d, id: `b-${baseId}-${idx}` });
-    });
-    forceUpdate((v) => v + 1);
+    const toInsert = dates.map((d) => ({ ...block, date: d }));
+    const batchId = Date.now();
+    const optimistic = toInsert.map((b, idx) => ({ ...b, id: `temp-${batchId}-${idx}` }));
+    setSessions((prev) => [...prev, ...optimistic]);
+    try {
+      const created = await createSessions(toInsert, user.id);
+      setSessions((prev) => [
+        ...prev.filter((s) => !s.id.startsWith(`temp-${batchId}-`)),
+        ...created,
+      ]);
+    } catch {
+      setSessions((prev) => prev.filter((s) => !s.id.startsWith(`temp-${batchId}-`)));
+      toast.error("Não foi possível bloquear o horário.");
+    }
   }
 
   const headerLabel = useMemo(() => {
@@ -138,12 +176,12 @@ export function AgendaPage() {
     return `${monthLabels[cursor.getMonth()]} de ${cursor.getFullYear()}`;
   }, [view, cursor, weekStart]);
 
-  const todaySessions = getSessionsByDate(toISODate(new Date()));
-  const weekSessions = getSessionsByWeek(weekStart);
+  const todaySessions = getSessionsByDate(sessions, toISODate(new Date()));
+  const weekSessions = getSessionsByWeek(sessions, weekStart);
   const weekRevenue = weekSessions
     .filter((s) => s.status !== "cancelled" && s.status !== "blocked")
     .reduce((sum, s) => sum + s.amount, 0);
-  const idleSlots = computeIdleSuggestions(weekStart);
+  const idleSlots = computeIdleSuggestions(sessions, weekStart);
 
   const filteredTodaySessions = todaySessions
     .filter((s) => filter === "all" || s.status === filter)
@@ -160,6 +198,7 @@ export function AgendaPage() {
         {/* Mini calendar */}
         <MiniCalendar
           cursor={cursor}
+          sessions={sessions}
           onSelect={(d) => {
             setCursor(d);
             setView("day");
@@ -364,6 +403,7 @@ export function AgendaPage() {
         {view === "week" && (
           <WeekView
             weekStart={weekStart}
+            sessions={getSessionsByWeek(sessions, weekStart)}
             filter={filter}
             onSelectSession={(s) => {
               setSelectedSession(s);
@@ -382,6 +422,7 @@ export function AgendaPage() {
         {view === "day" && (
           <DayView
             date={cursor}
+            sessions={getSessionsByDate(sessions, toISODate(cursor))}
             filter={filter}
             onSelectSession={(s) => {
               setSelectedSession(s);
@@ -400,6 +441,7 @@ export function AgendaPage() {
         {view === "month" && (
           <MonthView
             monthDate={cursor}
+            sessions={sessions}
             filter={filter}
             onSelectDate={(d) => {
               setCursor(d);
@@ -414,18 +456,40 @@ export function AgendaPage() {
         <SessionDetailPanel
           session={selectedSession}
           onClose={() => setSelectedSession(null)}
-          onAction={(action) => {
-            console.log("Ação na sessão:", action, selectedSession.id);
+          onAction={async (action) => {
             if (action === "reschedule") {
               setSelectedSession(null);
               openNewSession(selectedSession.date, selectedSession.startTime, selectedSession.patientId ?? undefined);
+              return;
+            }
+            if (action === "message" || action === "video") {
+              console.log("Ação na sessão:", action, selectedSession.id);
+              return;
+            }
+            const newStatus: SessionStatus = action === "confirm" ? "confirmed" : "cancelled";
+            const previous = sessions;
+            setSessions((prev) =>
+              prev.map((s) => (s.id === selectedSession.id ? { ...s, status: newStatus } : s)),
+            );
+            setSelectedSession((prev) => (prev ? { ...prev, status: newStatus } : prev));
+            try {
+              await updateSessionStatus(selectedSession.id, newStatus);
+            } catch {
+              setSessions(previous);
+              setSelectedSession((prev) => (prev ? { ...prev, status: selectedSession.status } : prev));
+              toast.error("Não foi possível atualizar a sessão.");
             }
           }}
-          onDelete={() => {
-            const idx = allSessions.findIndex((s) => s.id === selectedSession.id);
-            if (idx !== -1) allSessions.splice(idx, 1);
+          onDelete={async () => {
+            const previous = sessions;
+            setSessions((prev) => prev.filter((s) => s.id !== selectedSession.id));
             setSelectedSession(null);
-            forceUpdate((v) => v + 1);
+            try {
+              await deleteSession(selectedSession.id);
+            } catch {
+              setSessions(previous);
+              toast.error("Não foi possível excluir a sessão.");
+            }
           }}
         />
       )}
@@ -436,6 +500,7 @@ export function AgendaPage() {
         initialDate={newSessionState.date}
         initialTime={newSessionState.time}
         initialPatientId={newSessionState.patientId}
+        sessions={sessions}
         onClose={handleCloseNew}
         onSave={handleSaveNew}
       />
@@ -444,6 +509,7 @@ export function AgendaPage() {
         open={blockState.open}
         initialDate={blockState.date}
         initialTime={blockState.time}
+        sessions={sessions}
         onClose={() => setBlockState({ open: false })}
         onSave={handleSaveBlock}
       />
@@ -492,7 +558,15 @@ function StatCard({
   );
 }
 
-function MiniCalendar({ cursor, onSelect }: { cursor: Date; onSelect: (d: Date) => void }) {
+function MiniCalendar({
+  cursor,
+  sessions,
+  onSelect,
+}: {
+  cursor: Date;
+  sessions: Session[];
+  onSelect: (d: Date) => void;
+}) {
   const [month, setMonth] = useState(new Date(cursor.getFullYear(), cursor.getMonth(), 1));
   const today = toISODate(new Date());
   const cursorIso = toISODate(cursor);
@@ -540,7 +614,7 @@ function MiniCalendar({ cursor, onSelect }: { cursor: Date; onSelect: (d: Date) 
           const inMonth = d.getMonth() === month.getMonth();
           const isToday = iso === today;
           const isSelected = iso === cursorIso;
-          const hasSession = allSessions.some((s) => s.date === iso);
+          const hasSession = sessions.some((s) => s.date === iso);
           return (
             <button
               key={i}
@@ -570,54 +644,7 @@ function MiniCalendar({ cursor, onSelect }: { cursor: Date; onSelect: (d: Date) 
   );
 }
 
-function expandRecurrence(startISO: string, recurrence: Session["recurrence"]): string[] {
-  const start = fromISODate(startISO);
-  const out: string[] = [];
-  const push = (d: Date) => out.push(toISODate(d));
-
-  if (recurrence === "Única") {
-    push(start);
-    return out;
-  }
-
-  if (recurrence === "Diária") {
-    for (let i = 0; i < 28; i++) push(addDays(start, i));
-    return out;
-  }
-
-  if (recurrence === "Seg a sex") {
-    let added = 0;
-    for (let i = 0; added < 40 && i < 90; i++) {
-      const d = addDays(start, i);
-      const dow = d.getDay();
-      if (dow !== 0 && dow !== 6) {
-        push(d);
-        added++;
-      }
-    }
-    return out;
-  }
-
-  if (recurrence === "Semanal") {
-    for (let i = 0; i < 12; i++) push(addDays(start, i * 7));
-    return out;
-  }
-
-  if (recurrence === "Quinzenal") {
-    for (let i = 0; i < 8; i++) push(addDays(start, i * 14));
-    return out;
-  }
-
-  // Mensal
-  for (let i = 0; i < 6; i++) {
-    const d = new Date(start);
-    d.setMonth(d.getMonth() + i);
-    push(d);
-  }
-  return out;
-}
-
-function computeIdleSuggestions(weekStart: Date) {
+function computeIdleSuggestions(sessions: Session[], weekStart: Date) {
   const suggestions: { date: string; time: string; label: string }[] = [];
   const candidates = ["10:00", "14:00", "16:00", "18:00"];
   for (let i = 0; i < 5; i++) {
@@ -625,7 +652,7 @@ function computeIdleSuggestions(weekStart: Date) {
     const iso = toISODate(d);
     const dayLabel = weekDayLabels[i];
     const dayBusy = new Set(
-      allSessions.filter((s) => s.date === iso).map((s) => s.startTime),
+      sessions.filter((s) => s.date === iso).map((s) => s.startTime),
     );
     candidates.forEach((c) => {
       if (!dayBusy.has(c)) {

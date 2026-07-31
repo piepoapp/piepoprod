@@ -1,7 +1,6 @@
 import {
   addDays,
   toISODate,
-  getSessionsByWeek,
   weekDayLabels,
   type Session,
   type SessionStatus,
@@ -12,6 +11,7 @@ import { QuickBlockPanel } from "./QuickBlockPanel";
 
 interface Props {
   weekStart: Date;
+  sessions: Session[];
   onSelectSession: (s: Session) => void;
   onSelectSlot: (date: string, time: string) => void;
   selectedSlot: { date: string; time: string } | null;
@@ -30,6 +30,7 @@ const HOUR_HEIGHT = 64;
 
 export function WeekView({
   weekStart,
+  sessions,
   onSelectSession,
   onSelectSlot,
   selectedSlot,
@@ -43,8 +44,7 @@ export function WeekView({
 }: Props) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const hours = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
-  const allWeekSessions = getSessionsByWeek(weekStart);
-  const sessions = filter === "all" ? allWeekSessions : allWeekSessions.filter((s) => s.status === filter);
+  const filtered = filter === "all" ? sessions : sessions.filter((s) => s.status === filter);
   const today = toISODate(new Date());
 
   return (
@@ -98,7 +98,7 @@ export function WeekView({
         {days.map((d) => {
           const iso = toISODate(d);
           const isToday = iso === today;
-          const daySessions = sessions.filter((s) => s.date === iso);
+          const daySessions = filtered.filter((s) => s.date === iso);
           return (
             <div
               key={iso}

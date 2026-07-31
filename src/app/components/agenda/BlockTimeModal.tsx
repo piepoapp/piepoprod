@@ -5,12 +5,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar as CalendarPicker } from "../ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { format, parse } from "date-fns";
-import { sessions, type Session } from "../../data/agendaData";
+import type { Session } from "../../data/agendaData";
 
 interface Props {
   open: boolean;
   initialDate?: string;
   initialTime?: string;
+  sessions: Session[];
   onClose: () => void;
   onSave: (block: Omit<Session, "id">) => void;
 }
@@ -30,6 +31,7 @@ export function BlockTimeModal({
   open,
   initialDate,
   initialTime,
+  sessions,
   onClose,
   onSave,
 }: Props) {

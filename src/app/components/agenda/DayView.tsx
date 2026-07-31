@@ -1,7 +1,6 @@
 import { CurrencyCircleDollar, Clock, CheckCircle } from "@phosphor-icons/react";
 import {
   toISODate,
-  getSessionsByDate,
   weekDayLabels,
   monthLabels,
   type Session,
@@ -13,6 +12,7 @@ import { QuickBlockPanel } from "./QuickBlockPanel";
 
 interface Props {
   date: Date;
+  sessions: Session[];
   onSelectSession: (s: Session) => void;
   onSelectSlot: (date: string, time: string) => void;
   selectedSlot: { date: string; time: string } | null;
@@ -31,6 +31,7 @@ const HOUR_HEIGHT = 72;
 
 export function DayView({
   date,
+  sessions,
   onSelectSession,
   onSelectSlot,
   selectedSlot,
@@ -45,8 +46,7 @@ export function DayView({
   const iso = toISODate(date);
   const isToday = iso === toISODate(new Date());
   const hours = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
-  const allDaySessions = getSessionsByDate(iso);
-  const daySessions = filter === "all" ? allDaySessions : allDaySessions.filter((s) => s.status === filter);
+  const daySessions = filter === "all" ? sessions : sessions.filter((s) => s.status === filter);
 
   const totalForecast = daySessions
     .filter((s) => s.status !== "cancelled" && s.status !== "blocked")

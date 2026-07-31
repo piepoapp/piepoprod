@@ -3,16 +3,18 @@ import {
   getSessionsByMonth,
   statusMeta,
   weekDayLabels,
+  type Session,
   type SessionStatus,
 } from "../../data/agendaData";
 
 interface Props {
   monthDate: Date;
+  sessions: Session[];
   onSelectDate: (date: Date) => void;
   filter?: SessionStatus | "all";
 }
 
-export function MonthView({ monthDate, onSelectDate, filter = "all" }: Props) {
+export function MonthView({ monthDate, sessions, onSelectDate, filter = "all" }: Props) {
   const year = monthDate.getFullYear();
   const month = monthDate.getMonth();
   const firstDay = new Date(year, month, 1);
@@ -23,7 +25,7 @@ export function MonthView({ monthDate, onSelectDate, filter = "all" }: Props) {
     cells.push(new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i));
   }
 
-  const monthSessions = getSessionsByMonth(year, month);
+  const monthSessions = getSessionsByMonth(sessions, year, month);
   const today = toISODate(new Date());
 
   return (
