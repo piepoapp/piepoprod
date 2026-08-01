@@ -37,7 +37,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Entrar no Piepo" subtitle="Acesse sua conta para gerenciar seus pacientes">
+    <AuthLayout title="Bem-vindo(a) de volta" subtitle="Acesse sua conta para gerenciar seus pacientes">
       <div className="flex flex-col gap-[16px]">
         <GoogleButton label="Continuar com Google" />
         <AuthDivider label="Ou continue com" />
@@ -49,7 +49,7 @@ export function LoginPage() {
           label="E-mail"
           type="email"
           icon={At}
-          placeholder="voce@email.com"
+          placeholder="Insira o seu e-mail"
           error={errors.email}
           {...register("email", { required: "Informe seu e-mail" })}
         />

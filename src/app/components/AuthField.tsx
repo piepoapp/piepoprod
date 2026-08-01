@@ -31,7 +31,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
             <Icon
               size={16}
               weight="bold"
-              className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[#a1a1aa] pointer-events-none"
+              className="absolute left-[16px] top-1/2 -translate-y-1/2 text-[#a1a1aa] pointer-events-none"
             />
           )}
           <input
@@ -50,7 +50,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
               type="button"
               tabIndex={-1}
               onClick={() => setVisible((v) => !v)}
-              className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#a1a1aa] hover:text-[#65635a] transition-colors cursor-pointer"
+              className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#a1a1aa] hover:text-[#65635a] transition-colors cursor-pointer"
             >
               {visible ? <EyeSlash size={16} weight="bold" /> : <Eye size={16} weight="bold" />}
             </button>

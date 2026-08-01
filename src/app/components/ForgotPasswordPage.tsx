@@ -64,7 +64,7 @@ export function ForgotPasswordPage() {
           label="E-mail"
           type="email"
           icon={At}
-          placeholder="voce@email.com"
+          placeholder="Insira o seu e-mail"
           error={errors.email}
           {...register("email", { required: "Informe seu e-mail" })}
         />

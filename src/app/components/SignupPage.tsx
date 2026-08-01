@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Navigate, Link, useNavigate } from "react-router";
 import { toast } from "sonner";
-import { At, Lock } from "@phosphor-icons/react";
+import { UserCircle, At, Lock } from "@phosphor-icons/react";
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { AuthLayout } from "./AuthLayout";
 import { AuthField } from "./AuthField";
@@ -52,6 +52,7 @@ export function SignupPage() {
           id="fullName"
           label="Nome completo"
           type="text"
+          icon={UserCircle}
           placeholder="Seu nome"
           error={errors.fullName}
           {...register("fullName", { required: "Informe seu nome" })}
@@ -62,7 +63,7 @@ export function SignupPage() {
           label="E-mail"
           type="email"
           icon={At}
-          placeholder="voce@email.com"
+          placeholder="Insira o seu e-mail"
           error={errors.email}
           {...register("email", { required: "Informe seu e-mail" })}
         />
