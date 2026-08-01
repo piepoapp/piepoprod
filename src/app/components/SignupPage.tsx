@@ -1,18 +1,23 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Navigate, Link, useNavigate } from "react-router";
 import { toast } from "sonner";
-import { UserCircle, At, Lock } from "@phosphor-icons/react";
+import { UserCircle, At, Lock, Phone } from "@phosphor-icons/react";
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { AuthLayout } from "./AuthLayout";
 import { AuthField } from "./AuthField";
+import { AuthCheckbox } from "./AuthCheckbox";
+import { PhoneField } from "./PhoneField";
+import { PasswordStrengthMeter } from "./PasswordStrengthMeter";
 import { GoogleButton, AuthDivider } from "./AuthSocialButtons";
 
 interface FormValues {
   fullName: string;
   email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
+  acceptedTerms: boolean;
 }
 
 export function SignupPage() {
@@ -23,14 +28,21 @@ export function SignupPage() {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({ defaultValues: { acceptedTerms: false } });
 
   if (user) return <Navigate to="/" replace />;
 
+  const passwordValue = watch("password");
+  const confirmValue = watch("confirmPassword");
+  const acceptedTerms = watch("acceptedTerms");
+  const passwordsOk = !!passwordValue && passwordValue.length >= 8 && passwordValue === confirmValue;
+  const ready = passwordsOk && !!acceptedTerms;
+
   async function onSubmit(data: FormValues) {
     setSubmitting(true);
-    const { error } = await signUp(data.email, data.password, data.fullName);
+    const { error } = await signUp(data.email, data.password, data.fullName, data.phone);
     setSubmitting(false);
     if (error) {
       toast.error("Não foi possível criar sua conta. " + error);
@@ -68,18 +80,35 @@ export function SignupPage() {
           {...register("email", { required: "Informe seu e-mail" })}
         />
 
-        <AuthField
-          id="password"
-          label="Senha"
-          type="password"
-          icon={Lock}
-          placeholder="Mínimo 6 caracteres"
-          error={errors.password}
-          {...register("password", {
-            required: "Informe uma senha",
-            minLength: { value: 6, message: "A senha deve ter ao menos 6 caracteres" },
-          })}
+        <PhoneField
+          id="phone"
+          name="phone"
+          control={control}
+          label="Telefone"
+          icon={Phone}
+          placeholder="(00) 00000-0000"
+          error={errors.phone}
+          rules={{
+            required: "Informe seu telefone",
+            pattern: { value: /^\(\d{2}\) \d{5}-\d{4}$/, message: "Telefone inválido" },
+          }}
         />
+
+        <div className="flex flex-col gap-[8px]">
+          <AuthField
+            id="password"
+            label="Senha"
+            type="password"
+            icon={Lock}
+            placeholder="Mínimo 8 caracteres"
+            error={errors.password}
+            {...register("password", {
+              required: "Informe uma senha",
+              minLength: { value: 8, message: "A senha deve ter ao menos 8 caracteres" },
+            })}
+          />
+          <PasswordStrengthMeter password={passwordValue ?? ""} />
+        </div>
 
         <AuthField
           id="confirmPassword"
@@ -94,11 +123,35 @@ export function SignupPage() {
           })}
         />
 
+        <Controller
+          name="acceptedTerms"
+          control={control}
+          rules={{ required: "Você precisa aceitar os termos para continuar" }}
+          render={({ field }) => (
+            <AuthCheckbox
+              id="acceptedTerms"
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              error={errors.acceptedTerms?.message}
+            >
+              Eu li e aceito os{" "}
+              <Link to="/termos" target="_blank" className="font-medium text-[#317dff] hover:underline">
+                Termos de Uso
+              </Link>{" "}
+              e a{" "}
+              <Link to="/privacidade" target="_blank" className="font-medium text-[#317dff] hover:underline">
+                Política de Privacidade
+              </Link>
+              .
+            </AuthCheckbox>
+          )}
+        />
+
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || !ready}
           className={`h-[40px] rounded-[8px] flex items-center justify-center mt-[8px] transition-colors ${
-            submitting ? "bg-[#a9c5ff] cursor-not-allowed" : "bg-[#317dff] hover:bg-[#2968d9] cursor-pointer"
+            ready && !submitting ? "bg-[#317dff] hover:bg-[#2968d9] cursor-pointer" : "bg-[#a9c5ff] cursor-not-allowed"
           }`}
         >
           <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[20px] text-white">
