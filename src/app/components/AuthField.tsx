@@ -1,21 +1,25 @@
-import { forwardRef, type InputHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
 import type { FieldError } from "react-hook-form";
 
 interface AuthFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: FieldError;
+  labelExtra?: ReactNode;
 }
 
 export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
-  ({ label, error, className, id, ...props }, ref) => {
+  ({ label, error, labelExtra, className, id, ...props }, ref) => {
     return (
       <div className="flex flex-col gap-[8px]">
-        <label
-          htmlFor={id}
-          className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16.8px] text-black"
-        >
-          {label}
-        </label>
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor={id}
+            className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16.8px] text-black"
+          >
+            {label}
+          </label>
+          {labelExtra}
+        </div>
         <input
           ref={ref}
           id={id}

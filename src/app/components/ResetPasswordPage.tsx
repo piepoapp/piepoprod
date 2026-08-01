@@ -1,21 +1,18 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Navigate, Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { AuthLayout } from "./AuthLayout";
 import { AuthField } from "./AuthField";
-import { GoogleButton, AuthDivider } from "./AuthSocialButtons";
 
 interface FormValues {
-  fullName: string;
-  email: string;
   password: string;
   confirmPassword: string;
 }
 
-export function SignupPage() {
-  const { user, signUp } = useAuth();
+export function ResetPasswordPage() {
+  const { updatePassword } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -25,49 +22,24 @@ export function SignupPage() {
     formState: { errors },
   } = useForm<FormValues>();
 
-  if (user) return <Navigate to="/" replace />;
-
   async function onSubmit(data: FormValues) {
     setSubmitting(true);
-    const { error } = await signUp(data.email, data.password, data.fullName);
+    const { error } = await updatePassword(data.password);
     setSubmitting(false);
     if (error) {
-      toast.error("Não foi possível criar sua conta. " + error);
+      toast.error("Não foi possível redefinir a senha. O link pode ter expirado.");
       return;
     }
-    toast.success("Conta criada com sucesso!");
+    toast.success("Senha redefinida com sucesso!");
     navigate("/");
   }
 
   return (
-    <AuthLayout title="Criar conta no Piepo" subtitle="Cadastre-se para começar a gerenciar seus pacientes">
-      <div className="flex flex-col gap-[16px]">
-        <GoogleButton label="Cadastrar com Google" />
-        <AuthDivider label="Ou continue com" />
-      </div>
-
+    <AuthLayout title="Redefinir senha" subtitle="Escolha uma nova senha para sua conta">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[16px]">
         <AuthField
-          id="fullName"
-          label="Nome completo"
-          type="text"
-          placeholder="Seu nome"
-          error={errors.fullName}
-          {...register("fullName", { required: "Informe seu nome" })}
-        />
-
-        <AuthField
-          id="email"
-          label="E-mail"
-          type="email"
-          placeholder="voce@email.com"
-          error={errors.email}
-          {...register("email", { required: "Informe seu e-mail" })}
-        />
-
-        <AuthField
           id="password"
-          label="Senha"
+          label="Nova senha"
           type="password"
           placeholder="Mínimo 6 caracteres"
           error={errors.password}
@@ -79,7 +51,7 @@ export function SignupPage() {
 
         <AuthField
           id="confirmPassword"
-          label="Confirmar senha"
+          label="Confirmar nova senha"
           type="password"
           placeholder="Repita a senha"
           error={errors.confirmPassword}
@@ -97,16 +69,9 @@ export function SignupPage() {
           }`}
         >
           <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[20px] text-white">
-            {submitting ? "Criando conta..." : "Criar conta"}
+            {submitting ? "Salvando..." : "Redefinir senha"}
           </span>
         </button>
-
-        <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] text-center">
-          Já tem conta?{" "}
-          <Link to="/login" className="font-medium text-[#317dff] hover:underline">
-            Entrar
-          </Link>
-        </p>
       </form>
     </AuthLayout>
   );

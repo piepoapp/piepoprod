@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { AuthLayout } from "./AuthLayout";
 import { AuthField } from "./AuthField";
+import { GoogleButton, AuthDivider } from "./AuthSocialButtons";
 
 interface FormValues {
   email: string;
@@ -35,18 +36,12 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout
-      title="Entrar no Piepo"
-      subtitle="Acesse sua conta para gerenciar seus pacientes"
-      footer={
-        <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] text-center">
-          Ainda não tem conta?{" "}
-          <Link to="/signup" className="font-medium text-[#317dff] hover:underline">
-            Cadastre-se
-          </Link>
-        </p>
-      }
-    >
+    <AuthLayout title="Entrar no Piepo" subtitle="Acesse sua conta para gerenciar seus pacientes">
+      <div className="flex flex-col gap-[16px]">
+        <GoogleButton label="Continuar com Google" />
+        <AuthDivider label="Ou continue com" />
+      </div>
+
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[16px]">
         <AuthField
           id="email"
@@ -63,6 +58,11 @@ export function LoginPage() {
           type="password"
           placeholder="••••••••"
           error={errors.password}
+          labelExtra={
+            <Link to="/esqueci-senha" className="font-['Geist',sans-serif] text-[13px] text-[#317dff] hover:underline">
+              Esqueceu sua senha?
+            </Link>
+          }
           {...register("password", { required: "Informe sua senha" })}
         />
 
@@ -77,6 +77,13 @@ export function LoginPage() {
             {submitting ? "Entrando..." : "Entrar"}
           </span>
         </button>
+
+        <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] text-center">
+          Ainda não tem conta?{" "}
+          <Link to="/signup" className="font-medium text-[#317dff] hover:underline">
+            Cadastre-se
+          </Link>
+        </p>
       </form>
     </AuthLayout>
   );
