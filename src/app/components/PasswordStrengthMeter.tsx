@@ -33,7 +33,7 @@ export function PasswordStrengthMeter({ password }: { password: string }) {
   const active = scoreStyles[score];
 
   return (
-    <div className="flex flex-col gap-[6px] -mt-[8px]">
+    <div className="flex flex-col gap-[6px]">
       <div className="flex gap-[4px]">
         {[1, 2, 3].map((seg) => (
           <div
