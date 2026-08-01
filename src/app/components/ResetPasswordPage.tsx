@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { Lock } from "@phosphor-icons/react";
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { AuthLayout } from "./AuthLayout";
 import { AuthField } from "./AuthField";
@@ -41,6 +42,7 @@ export function ResetPasswordPage() {
           id="password"
           label="Nova senha"
           type="password"
+          icon={Lock}
           placeholder="Mínimo 6 caracteres"
           error={errors.password}
           {...register("password", {
@@ -53,6 +55,7 @@ export function ResetPasswordPage() {
           id="confirmPassword"
           label="Confirmar nova senha"
           type="password"
+          icon={Lock}
           placeholder="Repita a senha"
           error={errors.confirmPassword}
           {...register("confirmPassword", {

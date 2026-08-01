@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Navigate, Link, useNavigate } from "react-router";
 import { toast } from "sonner";
+import { At, Lock } from "@phosphor-icons/react";
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { AuthLayout } from "./AuthLayout";
 import { AuthField } from "./AuthField";
@@ -60,6 +61,7 @@ export function SignupPage() {
           id="email"
           label="E-mail"
           type="email"
+          icon={At}
           placeholder="voce@email.com"
           error={errors.email}
           {...register("email", { required: "Informe seu e-mail" })}
@@ -69,6 +71,7 @@ export function SignupPage() {
           id="password"
           label="Senha"
           type="password"
+          icon={Lock}
           placeholder="Mínimo 6 caracteres"
           error={errors.password}
           {...register("password", {
@@ -81,6 +84,7 @@ export function SignupPage() {
           id="confirmPassword"
           label="Confirmar senha"
           type="password"
+          icon={Lock}
           placeholder="Repita a senha"
           error={errors.confirmPassword}
           {...register("confirmPassword", {

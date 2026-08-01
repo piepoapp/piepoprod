@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
+import { At } from "@phosphor-icons/react";
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { AuthLayout } from "./AuthLayout";
 import { AuthField } from "./AuthField";
@@ -62,6 +63,7 @@ export function ForgotPasswordPage() {
           id="email"
           label="E-mail"
           type="email"
+          icon={At}
           placeholder="voce@email.com"
           error={errors.email}
           {...register("email", { required: "Informe seu e-mail" })}
