@@ -13,12 +13,12 @@ interface AuthCheckboxProps {
 export function AuthCheckbox({ id, checked, onCheckedChange, error, children }: AuthCheckboxProps) {
   return (
     <div className="flex flex-col gap-[6px]">
-      <div className="flex items-start gap-[8px]">
+      <div className="flex items-center gap-[8px]">
         <CheckboxPrimitive.Root
           id={id}
           checked={checked}
           onCheckedChange={(v) => onCheckedChange(v === true)}
-          className={`mt-[2px] shrink-0 size-[18px] rounded-[4px] border-2 flex items-center justify-center outline-none transition-colors cursor-pointer ${
+          className={`shrink-0 size-[18px] rounded-[4px] border-2 flex items-center justify-center outline-none transition-colors cursor-pointer ${
             error
               ? "border-[#fd3939]"
               : checked
