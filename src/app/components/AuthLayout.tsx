@@ -9,7 +9,7 @@ interface AuthLayoutProps {
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-[24px] bg-[#fafafa] font-['Geist',sans-serif] px-[24px]">
-      <div className="w-[400px] max-w-full flex flex-col gap-[24px]">
+      <div className="w-[512px] max-w-full flex flex-col gap-[24px]">
         <div className="flex justify-center">
           <p className="font-['Confiteria_Script',sans-serif] font-bold text-[#0055e7] text-[40px] leading-none tracking-[0.96px]">
             o
