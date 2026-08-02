@@ -15,32 +15,40 @@ interface NavItemProps {
   icon: string;
   label: string;
   active?: boolean;
+  disabled?: boolean;
+  badge?: string;
   onClick: () => void;
 }
 
-function NavItem({ icon, label, active, onClick }: NavItemProps) {
+function NavItem({ icon, label, active, disabled, badge, onClick }: NavItemProps) {
   return (
     <button
-      onClick={onClick}
-      className={`flex items-center gap-[8px] w-full p-[12px] rounded-[8px] cursor-pointer transition-colors ${
-        active ? "bg-[#ebf2ff]" : "hover:bg-gray-50"
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`flex items-center gap-[8px] w-full p-[12px] rounded-[8px] transition-colors ${
+        disabled ? "cursor-not-allowed" : active ? "bg-[#ebf2ff] cursor-pointer" : "hover:bg-gray-50 cursor-pointer"
       }`}
     >
       <div className="relative shrink-0 size-[20px]">
         <svg className="absolute block size-full" fill="none" viewBox="0 0 20 20">
           <path
             d={icon}
-            fill={active ? "#317DFF" : "#737185"}
+            fill={disabled ? "#c4c4c4" : active ? "#317DFF" : "#737185"}
           />
         </svg>
       </div>
       <span
-        className={`font-['Geist',sans-serif] font-medium text-[14px] leading-[19.2px] ${
-          active ? "text-[#317dff]" : "text-[#737185]"
+        className={`flex-1 text-left font-['Geist',sans-serif] font-medium text-[14px] leading-[19.2px] ${
+          disabled ? "text-[#c4c4c4]" : active ? "text-[#317dff]" : "text-[#737185]"
         }`}
       >
         {label}
       </span>
+      {badge && (
+        <span className="shrink-0 font-['Geist',sans-serif] font-medium text-[11px] leading-[14px] text-[#6b7280] bg-[#f3f4f6] rounded-full px-[8px] py-[2px]">
+          {badge}
+        </span>
+      )}
     </button>
   );
 }
@@ -49,10 +57,7 @@ const mainNavItems = [
   { icon: svgPaths.p267fc080, label: "Início", path: "/" },
   { icon: svgPaths.pc8bd280, label: "Pacientes", path: "/pacientes" },
   { icon: svgPaths.p29425600, label: "Agenda", path: "/agenda" },
-  { icon: svgPaths.p67b1a00, label: "Financeiro", path: "/financeiro" },
-];
-
-const bottomNavItems = [
+  { icon: svgPaths.p67b1a00, label: "Financeiro", path: "/financeiro", disabled: true, badge: "Em breve" },
   { icon: svgPaths.p1976bb40, label: "Configurações", path: "/configuracoes" },
 ];
 
@@ -91,6 +96,8 @@ export function Sidebar() {
               icon={item.icon}
               label={item.label}
               active={isActive(item.path)}
+              disabled={item.disabled}
+              badge={item.badge}
               onClick={() => navigate(item.path)}
             />
           ))}
@@ -99,18 +106,6 @@ export function Sidebar() {
 
       {/* Bottom Section */}
       <div className="px-[16px] pb-[24px]">
-        <div className="h-px bg-[#e6e6e1] mb-[16px]" />
-        <nav className="flex flex-col mb-[16px]">
-          {bottomNavItems.map((item) => (
-            <NavItem
-              key={item.label}
-              icon={item.icon}
-              label={item.label}
-              active={isActive(item.path)}
-              onClick={() => navigate(item.path)}
-            />
-          ))}
-        </nav>
         <div className="h-px bg-[#e6e6e1] mb-[16px]" />
 
         {/* Profile */}

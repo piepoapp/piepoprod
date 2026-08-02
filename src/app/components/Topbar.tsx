@@ -44,7 +44,7 @@ export function Topbar() {
   }
 
   return (
-    <div className="fixed top-0 left-[280px] right-0 h-[64px] bg-white border-b border-[#e6e6e1] z-10 flex items-center justify-between px-[40px]">
+    <div className="fixed top-0 left-[280px] right-0 h-[64px] bg-white border-b border-[#e6e6e1] z-30 flex items-center justify-between px-[40px]">
       <PageHeading />
       <div className="relative ml-auto" ref={dropdownRef}>
         <button
