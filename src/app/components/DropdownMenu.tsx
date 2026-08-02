@@ -12,12 +12,14 @@ interface DropdownMenuProps {
   trigger: ReactNode;
   items: DropdownItem[];
   align?: "start" | "end";
+  placement?: "top" | "bottom";
 }
 
 export function DropdownMenu({
   trigger,
   items,
   align = "end",
+  placement = "bottom",
 }: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -45,9 +47,9 @@ export function DropdownMenu({
       <div onClick={() => setOpen((v) => !v)}>{trigger}</div>
       {open && (
         <div
-          className={`absolute top-[calc(100%+6px)] z-50 min-w-[180px] bg-white rounded-[8px] border border-[#e4e4e7] shadow-[0px_8px_24px_-4px_rgba(0,0,0,0.12)] p-[4px] animate-in fade-in zoom-in-95 duration-100 ${
-            align === "end" ? "right-0" : "left-0"
-          }`}
+          className={`absolute z-50 min-w-[180px] bg-white rounded-[8px] border border-[#e4e4e7] shadow-[0px_8px_24px_-4px_rgba(0,0,0,0.12)] p-[4px] animate-in fade-in zoom-in-95 duration-100 ${
+            placement === "top" ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"
+          } ${align === "end" ? "right-0" : "left-0"}`}
         >
           {items.map((item, i) => (
             <div key={`${item.label}-${i}`}>

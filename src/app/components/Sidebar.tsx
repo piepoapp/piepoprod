@@ -1,7 +1,15 @@
 import svgPaths from "../../imports/svg-ifwz00yaeh";
-import imgEllipse1 from "figma:asset/860a91f8be758fc5448baa362fe056cb97a0e18d.png";
 import { useLocation, useNavigate } from "react-router";
+import { Question, SignOut } from "@phosphor-icons/react";
 import { useAuth } from "../../lib/auth/AuthProvider";
+import { DropdownMenu } from "./DropdownMenu";
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 interface NavItemProps {
   icon: string;
@@ -107,28 +115,41 @@ export function Sidebar() {
         <div className="h-px bg-[#e6e6e1] mb-[16px]" />
 
         {/* Profile */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-[12px] flex-1 min-w-0">
-            <img
-              src={imgEllipse1}
-              alt="Avatar"
-              className="size-[32px] rounded-full shrink-0 object-cover"
-            />
-            <div className="flex flex-col min-w-0">
-              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[1.5] text-black truncate">
-                {user?.user_metadata?.full_name ?? "Psicólogo(a)"}
-              </span>
-              <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-[1.5] text-[#737185] truncate">
-                {user?.email ?? ""}
-              </span>
+        <DropdownMenu
+          align="start"
+          placement="top"
+          trigger={
+            <div className="flex items-center gap-[12px] w-full p-[4px] rounded-[8px] hover:bg-gray-50 transition-colors cursor-pointer">
+              <div className="size-[32px] rounded-full bg-[#ebf2ff] flex items-center justify-center shrink-0">
+                <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[1] text-[#317dff]">
+                  {getInitials(user?.user_metadata?.full_name ?? "Psicólogo(a)")}
+                </span>
+              </div>
+              <div className="flex flex-col min-w-0 text-left">
+                <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[1.5] text-black truncate">
+                  {user?.user_metadata?.full_name ?? "Psicólogo(a)"}
+                </span>
+                <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-[1.5] text-[#737185] truncate">
+                  {user?.email ?? ""}
+                </span>
+              </div>
             </div>
-          </div>
-          <button onClick={handleLogout} className="p-[8px] shrink-0 cursor-pointer" title="Sair">
-            <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
-              <path d={svgPaths.p37524800} fill="black" />
-            </svg>
-          </button>
-        </div>
+          }
+          items={[
+            {
+              label: "Ajuda",
+              icon: <Question size={16} weight="bold" />,
+              onClick: () => navigate("/suporte"),
+            },
+            {
+              label: "Sair",
+              icon: <SignOut size={16} weight="bold" />,
+              onClick: handleLogout,
+              destructive: true,
+              separatorBefore: true,
+            },
+          ]}
+        />
       </div>
     </div>
   );
