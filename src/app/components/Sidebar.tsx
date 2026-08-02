@@ -1,6 +1,6 @@
 import svgPaths from "../../imports/svg-ifwz00yaeh";
 import { useLocation, useNavigate } from "react-router";
-import { Question, SignOut } from "@phosphor-icons/react";
+import { Question, SignOut, DotsThree } from "@phosphor-icons/react";
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { DropdownMenu } from "./DropdownMenu";
 
@@ -53,7 +53,6 @@ const mainNavItems = [
 ];
 
 const bottomNavItems = [
-  { icon: svgPaths.p552c480, label: "Suporte", path: "/suporte" },
   { icon: svgPaths.p1976bb40, label: "Configurações", path: "/configuracoes" },
 ];
 
@@ -116,8 +115,8 @@ export function Sidebar() {
 
         {/* Profile */}
         <DropdownMenu
-          align="start"
-          placement="top"
+          placement="right"
+          fullWidth
           trigger={
             <div className="flex items-center gap-[12px] w-full p-[4px] rounded-[8px] hover:bg-gray-50 transition-colors cursor-pointer">
               <div className="size-[32px] rounded-full bg-[#ebf2ff] flex items-center justify-center shrink-0">
@@ -125,7 +124,7 @@ export function Sidebar() {
                   {getInitials(user?.user_metadata?.full_name ?? "Psicólogo(a)")}
                 </span>
               </div>
-              <div className="flex flex-col min-w-0 text-left">
+              <div className="flex flex-col min-w-0 text-left flex-1">
                 <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[1.5] text-black truncate">
                   {user?.user_metadata?.full_name ?? "Psicólogo(a)"}
                 </span>
@@ -133,11 +132,12 @@ export function Sidebar() {
                   {user?.email ?? ""}
                 </span>
               </div>
+              <DotsThree size={20} weight="bold" className="text-[#737185] shrink-0" />
             </div>
           }
           items={[
             {
-              label: "Ajuda",
+              label: "Suporte",
               icon: <Question size={16} weight="bold" />,
               onClick: () => navigate("/suporte"),
             },
