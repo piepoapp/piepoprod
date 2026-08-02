@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CaretUpDown, Check, MagnifyingGlass } from "@phosphor-icons/react";
+import { OptionsSkeleton } from "./skeletons";
 
 export interface ComboboxOption {
   value: string;
@@ -158,9 +159,7 @@ export function Combobox({
 
           <div className="max-h-[220px] overflow-y-auto p-[4px] [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#d4d4d8] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#a1a1aa]">
             {loading ? (
-              <div className="px-[12px] py-[16px] text-center font-['Geist',sans-serif] font-normal text-[13px] text-[#939393]">
-                Carregando...
-              </div>
+              <OptionsSkeleton rows={4} />
             ) : showEmptyPrompt ? (
               <div className="px-[12px] py-[16px] text-center font-['Geist',sans-serif] font-normal text-[13px] text-[#939393]">
                 {searchPromptMessage}

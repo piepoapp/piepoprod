@@ -43,6 +43,13 @@ import { MonthView } from "./agenda/MonthView";
 import { SessionDetailPanel } from "./agenda/SessionDetailPanel";
 import { NewSessionModal } from "./agenda/NewSessionModal";
 import { BlockTimeModal } from "./agenda/BlockTimeModal";
+import {
+  AgendaGridSkeleton,
+  ListSkeleton,
+  MonthGridSkeleton,
+  SkeletonBox,
+} from "./skeletons";
+import { useSmoothLoading } from "../hooks/useSmoothLoading";
 
 type ViewMode = "day" | "week" | "month";
 
@@ -63,10 +70,14 @@ export function AgendaPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const novoPaciente = patients.find((p) => p.id === novoPacienteId);
 
+  const [fetching, setFetching] = useState(true);
+  const loading = useSmoothLoading(fetching);
+
   useEffect(() => {
     listSessions()
       .then(setSessions)
-      .catch(() => toast.error("Não foi possível carregar a agenda."));
+      .catch(() => toast.error("Não foi possível carregar a agenda."))
+      .finally(() => setFetching(false));
     listPatients()
       .then(setPatients)
       .catch(() => {});
@@ -243,15 +254,19 @@ export function AgendaPage() {
                       {f.label}
                     </span>
                   </div>
-                  <span
-                    className={`min-w-[20px] h-[20px] px-[6px] rounded-full flex items-center justify-center font-['Geist',sans-serif] font-medium text-[11px] leading-[14px] ${
-                      isActive
-                        ? "bg-[#317dff] text-white"
-                        : "bg-[#f3f4f6] text-[#65635a]"
-                    }`}
-                  >
-                    {count}
-                  </span>
+                  {loading ? (
+                    <SkeletonBox w={20} h={20} radius={10} />
+                  ) : (
+                    <span
+                      className={`min-w-[20px] h-[20px] px-[6px] rounded-full flex items-center justify-center font-['Geist',sans-serif] font-medium text-[11px] leading-[14px] ${
+                        isActive
+                          ? "bg-[#317dff] text-white"
+                          : "bg-[#f3f4f6] text-[#65635a]"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -267,7 +282,10 @@ export function AgendaPage() {
             </span>
           </div>
           <div className="flex flex-col gap-[4px]">
-            {filteredTodaySessions.length === 0 && (
+            {loading && (
+              <ListSkeleton rows={3} avatarSize={28} bordered={false} trailing={false} />
+            )}
+            {!loading && filteredTodaySessions.length === 0 && (
               <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-[16px] text-[#a1a1aa] px-[4px]">
                 Nenhuma sessão para hoje.
               </p>
@@ -400,7 +418,10 @@ export function AgendaPage() {
         </div>
 
         {/* View */}
-        {view === "week" && (
+        {loading && view === "week" && <AgendaGridSkeleton days={7} hourHeight={64} />}
+        {loading && view === "day" && <AgendaGridSkeleton days={1} hourHeight={72} />}
+        {loading && view === "month" && <MonthGridSkeleton />}
+        {!loading && view === "week" && (
           <WeekView
             weekStart={weekStart}
             sessions={getSessionsByWeek(sessions, weekStart)}
@@ -419,7 +440,7 @@ export function AgendaPage() {
             onCloseSlot={() => setSelectedSlot(null)}
           />
         )}
-        {view === "day" && (
+        {!loading && view === "day" && (
           <DayView
             date={cursor}
             sessions={getSessionsByDate(sessions, toISODate(cursor))}
@@ -438,7 +459,7 @@ export function AgendaPage() {
             onCloseSlot={() => setSelectedSlot(null)}
           />
         )}
-        {view === "month" && (
+        {!loading && view === "month" && (
           <MonthView
             monthDate={cursor}
             sessions={sessions}

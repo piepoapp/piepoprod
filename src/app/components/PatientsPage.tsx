@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import type { Patient } from "../data/mockData";
 import { listPatients, updatePatientStatus, deletePatient as deletePatientApi } from "../../lib/api/patients";
@@ -16,6 +17,7 @@ import {
   DotsThree,
   ArrowsDownUp,
   User,
+  Users,
   Eye,
   Pause,
   Play,
@@ -23,6 +25,9 @@ import {
 } from "@phosphor-icons/react";
 import { NewPatientModal } from "./NewPatientModal";
 import { DropdownMenu } from "./DropdownMenu";
+import { CountCardsSkeleton, TableSkeleton } from "./skeletons";
+import { EmptyState } from "./EmptyState";
+import { useSmoothLoading } from "../hooks/useSmoothLoading";
 
 const statusConfig = {
   ativo: {
@@ -201,13 +206,24 @@ export function PatientsPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [newPatientOpen, setNewPatientOpen] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [fetching, setFetching] = useState(true);
+  const loading = useSmoothLoading(fetching);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Atalho vindo do empty state do Dashboard: /pacientes?novo=1
+  useEffect(() => {
+    if (searchParams.get("novo") === "1") {
+      setNewPatientOpen(true);
+      searchParams.delete("novo");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     listPatients()
       .then(setPatients)
       .catch(() => toast.error("Não foi possível carregar os pacientes."))
-      .finally(() => setLoading(false));
+      .finally(() => setFetching(false));
   }, []);
 
   const togglePause = async (id: string) => {
@@ -254,6 +270,10 @@ export function PatientsPage() {
     const matchesStatus = statusFilter === "todos" || p.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  // Sem nenhum paciente cadastrado a tabela é suprimida por completo:
+  // fica só o empty state, que carrega a única chamada para ação.
+  const noPatients = !loading && patients.length === 0;
 
   const counts = {
     todos: patients.length,
@@ -337,19 +357,25 @@ export function PatientsPage() {
           </div>
         </div>
 
-        <button
-          onClick={() => setNewPatientOpen(true)}
-          className="flex items-center justify-center gap-[8px] h-[40px] bg-[#317dff] hover:bg-[#2968d9] text-white rounded-[8px] px-[12px] py-[9px] cursor-pointer transition-colors shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
-        >
-          <Plus size={16} weight="bold" />
-          <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16.8px]">
-            Novo Paciente
-          </span>
-        </button>
+        {/* Sem pacientes, a única chamada para ação é a do empty state */}
+        {!noPatients && (
+          <button
+            onClick={() => setNewPatientOpen(true)}
+            className="flex items-center justify-center gap-[8px] h-[40px] bg-[#317dff] hover:bg-[#2968d9] text-white rounded-[8px] px-[12px] py-[9px] cursor-pointer transition-colors shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+          >
+            <Plus size={16} weight="bold" />
+            <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16.8px]">
+              Novo Paciente
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Status Cards */}
-      <div className="flex gap-[24px] items-start w-full">
+      {loading ? (
+        <CountCardsSkeleton />
+      ) : (
+      <div className="flex gap-[24px] items-start w-full animate-in fade-in duration-200">
         {(
           [
             { label: "Total", value: counts.todos, color: "#317DFF", desc: "pacientes cadastrados" },
@@ -377,11 +403,28 @@ export function PatientsPage() {
           </div>
         ))}
       </div>
+      )}
 
       {/* Table */}
-      <div className="relative rounded-[8px] w-full border border-[#e6e6e1] overflow-hidden">
+      {/* Table */}
+      {noPatients ? (
+        <EmptyState
+          className="min-h-[360px]"
+          icon={<Users size={20} weight="bold" />}
+          title="Nenhum paciente cadastrado"
+          description="Cadastre seu primeiro paciente para começar a organizar seus atendimentos, sessões e histórico em um só lugar."
+          action={{
+            label: "Novo Paciente",
+            icon: <Plus size={16} weight="bold" />,
+            onClick: () => setNewPatientOpen(true),
+          }}
+        />
+      ) : (
+      /* Sem overflow-hidden: recortaria o dropdown de ações das linhas.
+         Os cantos são arredondados no cabeçalho e na última linha. */
+      <div className="relative rounded-[8px] w-full border border-[#e6e6e1]">
         {/* Header */}
-        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_60px] bg-[#f9fafb] border-b border-[#e6e6e1]">
+        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_60px] bg-[#f9fafb] border-b border-[#e6e6e1] rounded-t-[8px]">
           <HeaderCell icon={<User size={16} weight="bold" className="text-[#363636]" />} label="Paciente" align="start" />
           <HeaderCell icon={<Phone size={16} weight="bold" className="text-[#363636]" />} label="Contato" align="center" />
           <HeaderCell label="Plano ou frequência" align="center" />
@@ -393,28 +436,29 @@ export function PatientsPage() {
 
         {/* Rows */}
         {loading ? (
-          <div className="px-[24px] py-[48px] flex flex-col items-center gap-[8px]">
-            <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#939393]">
-              Carregando pacientes...
-            </span>
-          </div>
+          <TableSkeleton gridTemplate="2fr 1fr 1fr 1fr 1fr 1fr 60px" rows={6} />
         ) : filtered.length === 0 ? (
-          <div className="px-[24px] py-[48px] flex flex-col items-center gap-[8px]">
-            <MagnifyingGlass size={32} weight="bold" className="text-[#d1d5db]" />
-            <span className="font-['Geist',sans-serif] font-medium text-[16px] text-[#939393]">
-              Nenhum paciente encontrado
-            </span>
-            <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#c4c4c4]">
-              Tente ajustar os filtros de busca
-            </span>
-          </div>
+          <EmptyState
+            className="min-h-[280px]"
+            icon={<MagnifyingGlass size={20} weight="bold" />}
+            title="Nenhum paciente encontrado"
+            description="Não encontramos pacientes com os filtros aplicados. Tente ajustar a busca ou limpar os filtros."
+            secondaryAction={{
+              label: "Limpar filtros",
+              icon: <ArrowsClockwise size={16} weight="bold" />,
+              onClick: () => {
+                setSearch("");
+                setStatusFilter("todos");
+              },
+            }}
+          />
         ) : (
           filtered.map((patient) => {
             const status = statusConfig[patient.status];
             return (
               <div
                 key={patient.id}
-                className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_60px] border-b border-[#e6e6e1] last:border-b-0 hover:bg-[#fafafa] transition-colors"
+                className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_60px] border-b border-[#e6e6e1] last:border-b-0 last:rounded-b-[8px] hover:bg-[#fafafa] transition-colors animate-in fade-in"
               >
                 {/* Paciente */}
                 <div className="h-[64px] flex items-center p-[24px] gap-[12px] min-w-0">
@@ -504,6 +548,7 @@ export function PatientsPage() {
           })
         )}
       </div>
+      )}
 
       <NewPatientModal
         open={newPatientOpen}

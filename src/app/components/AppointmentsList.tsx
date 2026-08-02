@@ -2,6 +2,12 @@ import svgPaths from "../../imports/svg-ifwz00yaeh";
 import { useState } from "react";
 import type { Appointment } from "../data/mockData";
 import { X, Video, MapPin, Clock, Calendar, Copy, ExternalLink } from "lucide-react";
+import { PlusCircle } from "@phosphor-icons/react";
+import { useNavigate } from "react-router";
+import { EmptyStateSkeleton, ListSkeleton } from "./skeletons";
+import { useEmptyStateHint } from "../hooks/useEmptyStateHint";
+import { EmptyState } from "./EmptyState";
+import emptyAppointmentsImage from "../../assets/empty-appointments.png";
 
 const badgeStyles = {
   primary: "bg-[#317dff] text-white border-[rgba(159,95,255,0.3)]",
@@ -225,7 +231,7 @@ function AppointmentRow({ appointment, onView }: { appointment: Appointment; onV
 
   return (
     <div
-      className={`w-full rounded-[8px] border transition-all duration-150 ${
+      className={`w-full rounded-[8px] border transition-all duration-150 animate-in fade-in ${
         isHighlighted
           ? "bg-[#ebf2ff] border-[#ebf2ff]"
           : "border-[#e5e7eb] hover:border-[#317dff]/30 hover:shadow-sm"
@@ -305,14 +311,23 @@ function AppointmentRow({ appointment, onView }: { appointment: Appointment; onV
 
 interface AppointmentsListProps {
   appointments: Appointment[];
+  loading?: boolean;
 }
 
-export function AppointmentsList({ appointments }: AppointmentsListProps) {
+export function AppointmentsList({ appointments, loading = false }: AppointmentsListProps) {
   const [modalAppointment, setModalAppointment] = useState<Appointment | null>(null);
+  const navigate = useNavigate();
+  const emptyHint = useEmptyStateHint("dashboard.appointments", loading, appointments.length === 0);
+  // Durante o carregamento seguimos o hint, para o padding não mudar na troca.
+  const isEmpty = loading ? emptyHint : appointments.length === 0;
 
   return (
-    <div className="flex-1 bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] min-w-0">
-      <div className="flex flex-col gap-[16px] px-[24px] pt-[24px] pb-[48px]">
+    <div className="flex-1 bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] min-w-0 self-stretch">
+      <div
+        className={`flex flex-col gap-[16px] px-[24px] pt-[24px] h-full ${
+          isEmpty ? "pb-[24px]" : "pb-[48px]"
+        }`}
+      >
         {/* Header */}
         <div className="flex gap-[8px] items-start">
           <svg width="20" height="20" fill="none" viewBox="0 0 20 20" className="shrink-0 mt-[2px]">
@@ -329,15 +344,23 @@ export function AppointmentsList({ appointments }: AppointmentsListProps) {
         </div>
 
         {/* Appointments */}
-        {appointments.length === 0 ? (
-          <div className="flex flex-col items-center gap-[4px] py-[24px]">
-            <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#939393]">
-              Nenhum atendimento agendado
-            </span>
-            <span className="font-['Geist',sans-serif] font-normal text-[13px] text-[#c4c4c4]">
-              Suas próximas sessões vão aparecer aqui
-            </span>
-          </div>
+        {loading ? (
+          emptyHint ? (
+            <EmptyStateSkeleton media="image" withAction descriptionLines={4} />
+          ) : (
+            <ListSkeleton rows={4} />
+          )
+        ) : appointments.length === 0 ? (
+          <EmptyState
+            image={emptyAppointmentsImage}
+            title="Nenhum atendimento agendado"
+            description="Você ainda não possui atendimentos agendados. Para começar, cadastre um paciente e agende sua primeira sessão. Assim, seus próximos compromissos aparecerão aqui automaticamente."
+            action={{
+              label: "Cadastrar primeiro paciente",
+              icon: <PlusCircle size={16} weight="bold" />,
+              onClick: () => navigate("/pacientes?novo=1"),
+            }}
+          />
         ) : (
           appointments.map((apt) => (
             <AppointmentRow

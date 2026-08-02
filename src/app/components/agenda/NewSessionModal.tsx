@@ -38,6 +38,7 @@ export function NewSessionModal({
   onSave,
 }: Props) {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientsLoading, setPatientsLoading] = useState(true);
   const [patientId, setPatientId] = useState(initialPatientId ?? "");
   const [date, setDate] = useState(initialDate ?? "");
   const [time, setTime] = useState(initialTime ?? "09:00");
@@ -58,7 +59,8 @@ export function NewSessionModal({
   useEffect(() => {
     listPatients()
       .then(setPatients)
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setPatientsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -237,6 +239,7 @@ export function NewSessionModal({
               onChange={setPatientId}
               placeholder="Buscar paciente..."
               searchPlaceholder="Buscar por nome..."
+              loading={patientsLoading}
               options={patients
                 .filter((p) => p.status === "ativo")
                 .map((p) => ({ value: p.id, label: p.name }))}

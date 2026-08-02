@@ -1,11 +1,19 @@
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import svgPaths from "../../imports/svg-ifwz00yaeh";
+import { ChartSkeleton, EmptyStateSkeleton } from "./skeletons";
+import { useEmptyStateHint } from "../hooks/useEmptyStateHint";
+import { EmptyState } from "./EmptyState";
+import emptyChartImage from "../../assets/empty-chart.png";
 
 interface WeeklyChartProps {
   data: { day: string; sessions: number }[];
+  loading?: boolean;
 }
 
-export function WeeklyChart({ data }: WeeklyChartProps) {
+export function WeeklyChart({ data, loading = false }: WeeklyChartProps) {
+  const isEmpty = data.every((d) => d.sessions === 0);
+  const emptyHint = useEmptyStateHint("dashboard.weeklyChart", loading, isEmpty);
+
   return (
     <div className="flex-1 min-w-0 bg-white rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] self-stretch">
       <div className="flex flex-col gap-[16px] pb-[48px] pt-[24px] px-[24px] h-full">
@@ -25,7 +33,20 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
         </div>
 
         {/* Chart */}
-        <div className="flex-1 w-full" style={{ minHeight: 240 }}>
+        {loading ? (
+          emptyHint ? (
+            <EmptyStateSkeleton media="image" />
+          ) : (
+            <ChartSkeleton height={240} bars={data.length || 6} />
+          )
+        ) : isEmpty ? (
+          <EmptyState
+            image={emptyChartImage}
+            title="Sem dados para exibir"
+            description="Complete atendimentos para visualizar suas estatísticas semanais. Os dados aparecerão aqui conforme você utilizar a plataforma."
+          />
+        ) : (
+        <div className="flex-1 w-full animate-in fade-in duration-200" style={{ minHeight: 240 }}>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={data}
@@ -81,6 +102,7 @@ export function WeeklyChart({ data }: WeeklyChartProps) {
             </BarChart>
           </ResponsiveContainer>
         </div>
+        )}
       </div>
     </div>
   );

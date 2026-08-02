@@ -1,5 +1,6 @@
 import svgPaths from "../../imports/svg-ifwz00yaeh";
 import { useState, useEffect, useRef } from "react";
+import { StatCardsSkeleton } from "./skeletons";
 
 interface StatusCardProps {
   label: string;
@@ -72,6 +73,7 @@ interface StatusCardsProps {
   completedDesc: string;
   rescheduled: number;
   rescheduledDesc: string;
+  loading?: boolean;
 }
 
 export function StatusCards({
@@ -83,6 +85,7 @@ export function StatusCards({
   completedDesc,
   rescheduled,
   rescheduledDesc,
+  loading = false,
 }: StatusCardsProps) {
   const cards: StatusCardProps[] = [
     {
@@ -119,8 +122,12 @@ export function StatusCards({
     },
   ];
 
+  if (loading) {
+    return <StatCardsSkeleton count={cards.length} />;
+  }
+
   return (
-    <div className="flex gap-[16px] w-full">
+    <div className="flex gap-[16px] w-full animate-in fade-in duration-200">
       {cards.map((card) => (
         <StatusCard key={card.label} {...card} />
       ))}

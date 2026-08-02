@@ -7,6 +7,7 @@ import { listPatients } from "../../lib/api/patients";
 import { listSessions } from "../../lib/api/sessions";
 import { toISODate, startOfWeek, addDays, type Session } from "../data/agendaData";
 import type { Appointment } from "../data/mockData";
+import { useSmoothLoading } from "../hooks/useSmoothLoading";
 
 const weekDays = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -36,16 +37,23 @@ export function DashboardPage() {
   const { user } = useAuth();
   const [activePatients, setActivePatients] = useState(0);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [patientsLoading, setPatientsLoading] = useState(true);
+  const [sessionsLoading, setSessionsLoading] = useState(true);
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] ?? "";
 
   useEffect(() => {
     listPatients()
       .then((patients) => setActivePatients(patients.filter((p) => p.status === "ativo").length))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setPatientsLoading(false));
     listSessions()
       .then(setSessions)
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setSessionsLoading(false));
   }, []);
+
+  const cardsLoading = useSmoothLoading(patientsLoading || sessionsLoading);
+  const sessionsPending = useSmoothLoading(sessionsLoading);
 
   const todayIso = toISODate(new Date());
   const scheduled = sessions.filter(
@@ -97,12 +105,13 @@ export function DashboardPage() {
         completedDesc="atendimentos concluídos"
         rescheduled={rescheduled}
         rescheduledDesc="sessões reagendadas"
+        loading={cardsLoading}
       />
 
       {/* Content Overview */}
       <div className="flex gap-[16px] items-start w-full">
-        <AppointmentsList appointments={upcoming} />
-        <WeeklyChart data={weeklyData} />
+        <AppointmentsList appointments={upcoming} loading={sessionsPending} />
+        <WeeklyChart data={weeklyData} loading={sessionsPending} />
       </div>
     </div>
   );
