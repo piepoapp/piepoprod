@@ -15,7 +15,7 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
             o
           </p>
         </div>
-        <div className="bg-white rounded-[16px] border border-[#efefef] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.1)] p-[32px] flex flex-col gap-[24px]">
+        <div className="bg-white rounded-[16px] border border-[#efefef] p-[32px] flex flex-col gap-[24px]">
           <div className="flex flex-col gap-[4px] items-center text-center">
             <h1 className="font-['Geist',sans-serif] font-medium text-[20px] leading-[24px] text-black">
               {title}
