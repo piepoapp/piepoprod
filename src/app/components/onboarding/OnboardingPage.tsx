@@ -7,6 +7,7 @@ import { completeOnboarding } from "../../../lib/api/profile";
 import { markJustOnboarded } from "../../../lib/sound";
 import {
   createDefaultAvailability,
+  isAvailabilityComplete,
   validateAvailability,
   type Availability,
   type WeekdayKey,
@@ -52,6 +53,9 @@ export function OnboardingPage() {
   const availabilityErrors: Partial<Record<WeekdayKey, string>> =
     step === 2 ? validateAvailability(availability) : {};
   const hasAvailabilityError = Object.keys(availabilityErrors).length > 0;
+  // Horário ainda incompleto (digitando) trava o avanço sem mostrar mensagem —
+  // diferente de um erro de verdade, como fim antes do início.
+  const availabilityIncomplete = step === 2 && !isAvailabilityComplete(availability);
 
   function parsePrice(): number | null {
     const raw = price.trim();
@@ -71,7 +75,7 @@ export function OnboardingPage() {
       return;
     }
     if (step === 2) {
-      if (hasAvailabilityError) return;
+      if (hasAvailabilityError || availabilityIncomplete) return;
       setStep(3);
     }
   }
@@ -105,7 +109,7 @@ export function OnboardingPage() {
   }
 
   const meta = stepMeta[step - 1];
-  const nextDisabled = step === 2 && hasAvailabilityError;
+  const nextDisabled = step === 2 && (hasAvailabilityError || availabilityIncomplete);
 
   return (
     <OnboardingLayout

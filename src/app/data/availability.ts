@@ -20,12 +20,15 @@ export const weekdayLabels: Record<WeekdayKey, string> = {
   sun: "Domingo",
 };
 
-/** Manhã + tarde de segunda a sexta — o caso mais comum, já com o intervalo de almoço. */
+/**
+ * Segunda a sexta, das 08:00 às 18:00.
+ *
+ * O tipo continua sendo uma lista de blocos por dia, ainda que a tela de
+ * onboarding edite só um: assim dá para reintroduzir intervalos (almoço)
+ * depois sem mexer no que já está gravado.
+ */
 export function createDefaultAvailability(): Availability {
-  const workday = (): TimeBlock[] => [
-    { start: "08:00", end: "12:00" },
-    { start: "13:00", end: "18:00" },
-  ];
+  const workday = (): TimeBlock[] => [{ start: "08:00", end: "18:00" }];
   return {
     mon: workday(),
     tue: workday(),
@@ -50,28 +53,29 @@ export const emptyAvailability: Availability = {
 /** Bloco sugerido ao ligar um dia que estava desativado. */
 export const defaultBlock: TimeBlock = { start: "08:00", end: "18:00" };
 
-/** Opções de 30 em 30 minutos, das 06:00 às 22:00. */
-export const timeOptions: string[] = (() => {
-  const out: string[] = [];
-  for (let minutes = 6 * 60; minutes <= 22 * 60; minutes += 30) {
-    const h = String(Math.floor(minutes / 60)).padStart(2, "0");
-    const m = String(minutes % 60).padStart(2, "0");
-    out.push(`${h}:${m}`);
-  }
-  return out;
-})();
-
 export function toMinutes(time: string): number {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
 }
 
+/** Um horário só conta quando está completo, no formato HH:MM. */
+export function isCompleteTime(time: string): boolean {
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(time);
+}
+
 /**
  * Valida os blocos de um dia: fim depois do início e sem sobreposição.
  * Retorna a mensagem de erro ou null se estiver tudo certo.
+ *
+ * Horário incompleto (digitação em andamento, ex. "08:") não gera mensagem —
+ * isso aconteceria a cada tecla digitada. Quem barra o avanço nesse caso é
+ * isAvailabilityComplete, sem exibir texto de erro.
  */
 export function validateDayBlocks(blocks: TimeBlock[]): string | null {
   for (const block of blocks) {
+    if (!isCompleteTime(block.start) || !isCompleteTime(block.end)) {
+      return null;
+    }
     if (toMinutes(block.end) <= toMinutes(block.start)) {
       return "O horário final precisa ser depois do inicial.";
     }
@@ -92,6 +96,14 @@ export function validateAvailability(availability: Availability): Partial<Record
     if (error) errors[day] = error;
   }
   return errors;
+}
+
+/** Todo horário de todo dia ativo está completo (formato HH:MM)? Usado para
+ *  travar o avanço sem exibir mensagem enquanto o usuário ainda digita. */
+export function isAvailabilityComplete(availability: Availability): boolean {
+  return weekdayOrder.every((day) =>
+    availability[day].every((b) => isCompleteTime(b.start) && isCompleteTime(b.end)),
+  );
 }
 
 /**
