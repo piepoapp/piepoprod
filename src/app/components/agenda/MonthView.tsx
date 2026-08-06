@@ -34,7 +34,7 @@ export function MonthView({ monthDate, sessions, onSelectDate, filter = "all" }:
         {weekDayLabels.map((d) => (
           <div
             key={d}
-            className="py-[10px] text-center font-['Geist',sans-serif] font-normal text-[11px] leading-[14px] text-[#737185] uppercase tracking-wide"
+            className="py-[10px] text-center font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#737185] uppercase tracking-wide"
           >
             {d}
           </div>
@@ -57,7 +57,7 @@ export function MonthView({ monthDate, sessions, onSelectDate, filter = "all" }:
             >
               <div className="flex items-center justify-between">
                 <span
-                  className={`font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] ${
+                  className={`font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] ${
                     isToday
                       ? "size-[24px] rounded-full bg-[#317dff] text-white flex items-center justify-center"
                       : inMonth
@@ -68,7 +68,7 @@ export function MonthView({ monthDate, sessions, onSelectDate, filter = "all" }:
                   {d.getDate()}
                 </span>
                 {cellSessions.length > 0 && (
-                  <span className="font-['Geist',sans-serif] font-normal text-[10px] leading-[12px] text-[#737185]">
+                  <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[12px] text-[#737185]">
                     {cellSessions.length}
                   </span>
                 )}
@@ -83,7 +83,7 @@ export function MonthView({ monthDate, sessions, onSelectDate, filter = "all" }:
                     >
                       <span className={`size-[6px] rounded-full ${meta.dot} shrink-0`} />
                       <span
-                        className={`font-['Geist',sans-serif] font-medium text-[10px] leading-[14px] ${meta.text} truncate`}
+                        className={`font-['Geist',sans-serif] font-medium text-[12px] leading-[14px] ${meta.text} truncate`}
                       >
                         {s.startTime} {s.patientName.split(" ")[0]}
                       </span>
@@ -91,7 +91,7 @@ export function MonthView({ monthDate, sessions, onSelectDate, filter = "all" }:
                   );
                 })}
                 {cellSessions.length > 3 && (
-                  <span className="font-['Geist',sans-serif] font-normal text-[10px] leading-[12px] text-[#737185] pl-[4px]">
+                  <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[12px] text-[#737185] pl-[4px]">
                     +{cellSessions.length - 3} mais
                   </span>
                 )}

@@ -27,6 +27,7 @@ import { NewPatientModal } from "./NewPatientModal";
 import { DropdownMenu } from "./DropdownMenu";
 import { CountCardsSkeleton, TableSkeleton } from "./skeletons";
 import { EmptyState } from "./EmptyState";
+import { ConfirmDialog } from "./ConfirmDialog";
 import { useSmoothLoading } from "../hooks/useSmoothLoading";
 
 const statusConfig = {
@@ -95,7 +96,7 @@ function PatientDetailPanel({ patient, onClose }: { patient: Patient; onClose: (
                     {status.label}
                   </span>
                 </div>
-                <span className="font-['Geist',sans-serif] font-normal text-[13px] text-[#939393]">
+                <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#939393]">
                   {patient.age} anos • {patient.gender}
                 </span>
               </div>
@@ -206,6 +207,7 @@ export function PatientsPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [newPatientOpen, setNewPatientOpen] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [fetching, setFetching] = useState(true);
   const loading = useSmoothLoading(fetching);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -290,7 +292,7 @@ export function PatientsPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-[24px] pb-[40px] pt-[24px] px-[40px]">
+    <div className="flex flex-col gap-[24px] p-[32px]">
       {/* Search + Filter + Novo Paciente */}
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-[16px]">
@@ -357,8 +359,9 @@ export function PatientsPage() {
           </div>
         </div>
 
-        {/* Sem pacientes, a única chamada para ação é a do empty state */}
-        {!noPatients && (
+        {/* Enquanto carrega não sabemos se há pacientes; some junto com o skeleton
+            e só reaparece se de fato houver pacientes (senão o empty state assume). */}
+        {!loading && !noPatients && (
           <button
             onClick={() => setNewPatientOpen(true)}
             className="flex items-center justify-center gap-[8px] h-[40px] bg-[#317dff] hover:bg-[#2968d9] text-white rounded-[8px] px-[12px] py-[9px] cursor-pointer transition-colors shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
@@ -394,7 +397,7 @@ export function PatientsPage() {
                 {card.label}
               </span>
             </div>
-            <span className="font-['Geist',sans-serif] font-bold text-[32px] leading-[24px] text-[#111827]">
+            <span className="font-['Geist',sans-serif] font-semibold text-[32px] leading-[24px] text-[#111827]">
               {card.value}
             </span>
             <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-[16.8px] text-[#939393]">
@@ -532,11 +535,7 @@ export function PatientsPage() {
                       {
                         label: "Excluir",
                         icon: <Trash size={16} weight="bold" />,
-                        onClick: () => {
-                          if (confirm(`Excluir o paciente ${patient.name}?`)) {
-                            deletePatient(patient.id);
-                          }
-                        },
+                        onClick: () => setPatientToDelete(patient),
                         destructive: true,
                         separatorBefore: true,
                       },
@@ -562,6 +561,24 @@ export function PatientsPage() {
           onClose={() => setSelectedPatient(null)}
         />
       )}
+
+      <ConfirmDialog
+        open={!!patientToDelete}
+        onOpenChange={(open) => !open && setPatientToDelete(null)}
+        title="Excluir paciente?"
+        description={
+          <>
+            Esta ação é permanente e não pode ser desfeita. Todos os dados de{" "}
+            <span className="font-medium text-[#111827]">{patientToDelete?.name}</span> — incluindo
+            histórico de sessões e anotações — serão removidos.
+          </>
+        }
+        confirmLabel="Excluir paciente"
+        onConfirm={() => {
+          if (patientToDelete) deletePatient(patientToDelete.id);
+          setPatientToDelete(null);
+        }}
+      />
     </div>
   );
 }

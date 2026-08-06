@@ -120,10 +120,10 @@ export function DayView({
       {daySessions.length >= 6 && (
         <div className="flex items-start gap-[10px] w-full bg-[#fef9c3] border border-[#fde68a] rounded-[12px] px-[16px] py-[12px]">
           <div className="size-[20px] rounded-full bg-[#eab308] flex items-center justify-center shrink-0 mt-[2px]">
-            <span className="font-['Geist',sans-serif] font-medium text-[11px] text-white">!</span>
+            <span className="font-['Geist',sans-serif] font-medium text-[12px] text-white">!</span>
           </div>
           <div className="flex flex-col gap-[2px]">
-            <p className="font-['Geist',sans-serif] font-medium text-[13px] leading-[18px] text-[#854d0e]">
+            <p className="font-['Geist',sans-serif] font-medium text-[14px] leading-[18px] text-[#854d0e]">
               Carga clínica alta neste dia
             </p>
             <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-[16px] text-[#92400e]">
@@ -151,7 +151,7 @@ function DayStat({
         <Icon size={16} weight="bold" className="text-[#65635a]" />
       </div>
       <div className="flex flex-col">
-        <span className="font-['Geist',sans-serif] font-normal text-[11px] leading-[14px] text-[#737185]">
+        <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#737185]">
           {label}
         </span>
         <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[18px] text-black">

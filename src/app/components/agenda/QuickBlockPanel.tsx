@@ -155,7 +155,7 @@ export function QuickBlockPanel({
       </div>
 
       <div className="flex items-center gap-[6px]">
-        <span className="font-['Geist',sans-serif] font-normal text-[11px] leading-[14px] text-[#737185] uppercase tracking-wide w-[60px] shrink-0">
+        <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#737185] uppercase tracking-wide w-[60px] shrink-0">
           Duração
         </span>
         <div className="flex gap-[4px]">
@@ -179,7 +179,7 @@ export function QuickBlockPanel({
       </div>
 
       <div className="flex items-center gap-[6px]">
-        <span className="font-['Geist',sans-serif] font-normal text-[11px] leading-[14px] text-[#737185] uppercase tracking-wide w-[60px] shrink-0">
+        <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#737185] uppercase tracking-wide w-[60px] shrink-0">
           Repetir
         </span>
         <div className="flex flex-wrap gap-[4px]">
@@ -213,7 +213,7 @@ export function QuickBlockPanel({
         }`}
       >
         <Check size={14} weight="bold" className="text-white" />
-        <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-white">
+        <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-white">
           Bloquear horário
         </span>
       </button>

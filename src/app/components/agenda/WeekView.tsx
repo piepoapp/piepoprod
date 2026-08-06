@@ -62,7 +62,7 @@ export function WeekView({
                 isToday ? "bg-[#ebf2ff]" : ""
               }`}
             >
-              <span className="font-['Geist',sans-serif] font-normal text-[11px] leading-[14px] text-[#737185] uppercase tracking-wide">
+              <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#737185] uppercase tracking-wide">
                 {weekDayLabels[d.getDay() === 0 ? 6 : d.getDay() - 1]}
               </span>
               <span
@@ -87,7 +87,7 @@ export function WeekView({
               style={{ height: HOUR_HEIGHT }}
               className="border-b border-[#f5f5f5] flex items-start justify-end pr-[8px] pt-[4px]"
             >
-              <span className="font-['Geist',sans-serif] font-normal text-[11px] leading-[14px] text-[#a1a1aa]">
+              <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#a1a1aa]">
                 {h.toString().padStart(2, "0")}:00
               </span>
             </div>

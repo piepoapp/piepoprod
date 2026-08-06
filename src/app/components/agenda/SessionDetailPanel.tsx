@@ -13,7 +13,6 @@ import {
   Repeat,
   ClockCounterClockwise,
   Trash,
-  Warning,
 } from "@phosphor-icons/react";
 import {
   fromISODate,
@@ -22,6 +21,7 @@ import {
   statusMeta,
   type Session,
 } from "../../data/agendaData";
+import { ConfirmDialog } from "../ConfirmDialog";
 
 interface Props {
   session: Session;
@@ -140,7 +140,7 @@ export function SessionDetailPanel({ session, onClose, onAction, onDelete }: Pro
               </p>
               <div className="flex items-start gap-[10px] p-[14px] rounded-[12px] border border-[#efefef] bg-[#fafafa]">
                 <Notepad size={16} weight="bold" className="text-[#65635a] mt-[2px] shrink-0" />
-                <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#1c1b1a]">
+                <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#1c1b1a]">
                   {session.notes}
                 </p>
               </div>
@@ -149,56 +149,18 @@ export function SessionDetailPanel({ session, onClose, onAction, onDelete }: Pro
         </div>
       </div>
 
-      {confirmDelete && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-[24px]"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setConfirmDelete(false)}
-          />
-          <div className="relative bg-white rounded-[12px] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.18)] w-[400px] max-w-full px-[24px] py-[24px] flex flex-col gap-[16px] animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-start gap-[12px]">
-              <div className="size-[40px] rounded-full bg-[#fef2f2] flex items-center justify-center shrink-0">
-                <Warning size={20} weight="bold" className="text-[#b91c1c]" />
-              </div>
-              <div className="flex flex-col gap-[6px]">
-                <p className="font-['Geist',sans-serif] font-medium text-[16px] leading-[20px] text-black">
-                  {session.status === "blocked" ? "Excluir bloqueio?" : "Excluir sessão?"}
-                </p>
-                <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#4b5563]">
-                  {session.status === "blocked"
-                    ? `O bloqueio "${session.patientName}" em ${session.startTime}–${session.endTime} será removido permanentemente.`
-                    : `A sessão de ${session.patientName} em ${session.startTime}–${session.endTime} será removida permanentemente. Essa ação não pode ser desfeita.`}
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-[8px] justify-end">
-              <button
-                type="button"
-                onClick={() => setConfirmDelete(false)}
-                className="h-[40px] px-[16px] rounded-[8px] border border-[#efefef] bg-white hover:bg-[#fafafa] transition-colors cursor-pointer font-['Geist',sans-serif] font-medium text-[14px] leading-[20px] text-[#65635a]"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setConfirmDelete(false);
-                  onDelete();
-                }}
-                className="h-[40px] px-[16px] rounded-[8px] bg-[#b91c1c] hover:bg-[#991b1b] transition-colors cursor-pointer flex items-center gap-[8px]"
-              >
-                <Trash size={14} weight="bold" className="text-white" />
-                <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[20px] text-white">
-                  Excluir
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title={session.status === "blocked" ? "Excluir bloqueio?" : "Excluir sessão?"}
+        description={
+          session.status === "blocked"
+            ? `O bloqueio "${session.patientName}" em ${session.startTime}–${session.endTime} será removido permanentemente. Essa ação não pode ser desfeita.`
+            : `A sessão de ${session.patientName} em ${session.startTime}–${session.endTime} será removida permanentemente, incluindo seu histórico. Essa ação não pode ser desfeita.`
+        }
+        confirmLabel={session.status === "blocked" ? "Excluir bloqueio" : "Excluir sessão"}
+        onConfirm={onDelete}
+      />
     </div>
   );
 }
@@ -219,7 +181,7 @@ function DetailRow({
         <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[16px] text-[#737185] shrink-0">
           {label}
         </span>
-        <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[18px] text-black truncate">
+        <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[18px] text-black truncate">
           {value}
         </span>
       </div>
@@ -254,7 +216,7 @@ function ActionButton({
       className={`${full ? "col-span-2" : ""} h-[40px] rounded-[10px] flex items-center justify-center gap-[8px] transition-colors cursor-pointer ${cls}`}
     >
       <Icon size={14} weight="bold" />
-      <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[16px]">
+      <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16px]">
         {label}
       </span>
     </button>

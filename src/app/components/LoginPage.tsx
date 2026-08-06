@@ -62,7 +62,7 @@ export function LoginPage() {
           placeholder="••••••••"
           error={errors.password}
           labelExtra={
-            <Link to="/esqueci-senha" className="font-['Geist',sans-serif] text-[13px] text-[#317dff] hover:underline">
+            <Link to="/esqueci-senha" className="font-['Geist',sans-serif] text-[14px] text-[#317dff] hover:underline">
               Esqueceu sua senha?
             </Link>
           }
@@ -81,7 +81,7 @@ export function LoginPage() {
           </span>
         </button>
 
-        <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] text-center">
+        <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#75787d] text-center">
           Ainda não tem conta?{" "}
           <Link to="/signup" className="font-medium text-[#317dff] hover:underline">
             Cadastre-se

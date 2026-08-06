@@ -36,7 +36,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className={`flex-1 flex flex-col items-center justify-center text-center gap-[16px] px-[24px] py-[40px] animate-in fade-in duration-200 ${className}`}
+      className={`flex-1 flex flex-col items-center justify-center text-center gap-[16px] px-[8px] py-[40px] animate-in fade-in duration-200 ${className}`}
     >
       {image && (
         <img
@@ -55,7 +55,7 @@ export function EmptyState({
         </div>
       )}
 
-      <div className="flex flex-col items-center gap-[8px] max-w-[440px]">
+      <div className="flex flex-col items-center gap-[8px] max-w-[520px]">
         <p className="font-['Geist',sans-serif] font-medium text-[18px] leading-[24px] text-[#111827]">
           {title}
         </p>

@@ -37,7 +37,7 @@ export function DashboardContentSkeleton() {
           <div className="flex flex-col gap-[16px] px-[24px] pt-[24px] pb-[48px]">
             <CardHeaderSkeleton />
             {appointmentsEmpty ? (
-              <EmptyStateSkeleton media="image" withAction descriptionLines={4} />
+              <EmptyStateSkeleton media="image" withAction descriptionLines={3} />
             ) : (
               <ListSkeleton rows={4} />
             )}
@@ -46,7 +46,11 @@ export function DashboardContentSkeleton() {
         <CardSkeleton className="flex-1 self-stretch">
           <div className="flex flex-col gap-[16px] pb-[48px] pt-[24px] px-[24px] h-full">
             <CardHeaderSkeleton />
-            {chartEmpty ? <EmptyStateSkeleton media="image" /> : <ChartSkeleton />}
+            {chartEmpty ? (
+              <EmptyStateSkeleton media="image" descriptionLines={3} />
+            ) : (
+              <ChartSkeleton />
+            )}
           </div>
         </CardSkeleton>
       </div>

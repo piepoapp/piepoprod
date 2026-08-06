@@ -161,11 +161,11 @@ export function Combobox({
             {loading ? (
               <OptionsSkeleton rows={4} />
             ) : showEmptyPrompt ? (
-              <div className="px-[12px] py-[16px] text-center font-['Geist',sans-serif] font-normal text-[13px] text-[#939393]">
+              <div className="px-[12px] py-[16px] text-center font-['Geist',sans-serif] font-normal text-[14px] text-[#939393]">
                 {searchPromptMessage}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="px-[12px] py-[16px] text-center font-['Geist',sans-serif] font-normal text-[13px] text-[#939393]">
+              <div className="px-[12px] py-[16px] text-center font-['Geist',sans-serif] font-normal text-[14px] text-[#939393]">
                 {emptyMessage}
               </div>
             ) : (

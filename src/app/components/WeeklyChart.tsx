@@ -35,7 +35,7 @@ export function WeeklyChart({ data, loading = false }: WeeklyChartProps) {
         {/* Chart */}
         {loading ? (
           emptyHint ? (
-            <EmptyStateSkeleton media="image" />
+            <EmptyStateSkeleton media="image" descriptionLines={3} />
           ) : (
             <ChartSkeleton height={240} bars={data.length || 6} />
           )
@@ -86,10 +86,10 @@ export function WeeklyChart({ data, loading = false }: WeeklyChartProps) {
                           style={{ backgroundColor: "#317DFF" }}
                         />
                         <div className="flex flex-1 items-center justify-between gap-[12px]">
-                          <span className="font-['Geist',sans-serif] font-normal text-[13px] text-[#6b7280]">
+                          <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#6b7280]">
                             Sessões
                           </span>
-                          <span className="font-['Geist',sans-serif] font-medium text-[13px] text-[#111827] tabular-nums">
+                          <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#111827] tabular-nums">
                             {item.value?.toLocaleString("pt-BR")}
                           </span>
                         </div>

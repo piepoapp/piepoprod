@@ -338,7 +338,7 @@ export function NewPatientModal({ open, onClose, onCreated }: NewPatientModalPro
               </div>
               <div className="flex items-start gap-[10px] w-full bg-[#fefae8] border border-[#f5e7a3] rounded-[10px] px-[14px] py-[10px] -mt-[12px]">
                 <Info size={16} weight="bold" className="text-[#b38600] shrink-0 mt-[2px]" />
-                <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#8a6a00]">
+                <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#8a6a00]">
                   O WhatsApp será usado futuramente pela IA de lembretes automáticos.
                 </p>
               </div>
@@ -501,7 +501,7 @@ export function NewPatientModal({ open, onClose, onCreated }: NewPatientModalPro
 
               <div className="flex items-start gap-[10px] w-full bg-[#f2f6ff] border border-[#d6e4ff] rounded-[10px] px-[14px] py-[12px]">
                 <Info size={16} weight="bold" className="text-[#317dff] shrink-0 mt-[2px]" />
-                <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#475569]">
+                <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#475569]">
                   Estas informações ficam no prontuário e são visíveis{" "}
                   <span className="font-medium text-[#317dff]">somente para você</span>
                   . O paciente não tem acesso à plataforma.
@@ -674,7 +674,7 @@ export function NewPatientModal({ open, onClose, onCreated }: NewPatientModalPro
                 <p className="font-['Geist',sans-serif] font-semibold text-[14px] leading-[20px] text-[#1c1b1a]">
                   Termo de Consentimento Livre e Esclarecido (TCLE)
                 </p>
-                <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[20px] text-[#65635a]">
+                <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[20px] text-[#65635a]">
                   Eu, paciente identificado(a) neste cadastro, declaro que fui informado(a), de forma clara e detalhada, sobre a coleta e tratamento dos meus dados pessoais e dados sensíveis de saúde pela profissional responsável, para fins de prestação de serviços psicológicos.
                 </p>
 
@@ -701,10 +701,10 @@ export function NewPatientModal({ open, onClose, onCreated }: NewPatientModalPro
                   },
                 ].map((s) => (
                   <div key={s.title} className="flex flex-col gap-[6px]">
-                    <p className="font-['Geist',sans-serif] font-semibold text-[13px] leading-[18px] text-[#1c1b1a]">
+                    <p className="font-['Geist',sans-serif] font-semibold text-[14px] leading-[18px] text-[#1c1b1a]">
                       {s.title}
                     </p>
-                    <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[20px] text-[#65635a]">
+                    <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[20px] text-[#65635a]">
                       {s.body}
                     </p>
                   </div>
@@ -746,7 +746,7 @@ export function NewPatientModal({ open, onClose, onCreated }: NewPatientModalPro
                     {opt.active && <Check size={12} weight="bold" className="text-white" />}
                   </div>
                   <div className="flex flex-col gap-[2px] min-w-0">
-                    <p className="font-['Geist',sans-serif] font-medium text-[13px] leading-[18px] text-[#1c1b1a]">
+                    <p className="font-['Geist',sans-serif] font-medium text-[14px] leading-[18px] text-[#1c1b1a]">
                       {opt.title}
                     </p>
                     <p className="font-['Geist',sans-serif] font-normal text-[12px] leading-[16px] text-[#65635a]">
@@ -919,10 +919,10 @@ function SuccessSummary({
             key={r.label}
             className="flex items-center justify-between gap-[16px] px-[16px] py-[12px]"
           >
-            <span className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#65635a]">
+            <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#65635a]">
               {r.label}
             </span>
-            <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[18px] text-black text-right truncate">
+            <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[18px] text-black text-right truncate">
               {r.value}
             </span>
           </div>
@@ -1114,7 +1114,7 @@ function RadioCard({
         <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[17px] text-black">
           {title}
         </span>
-        <span className="font-['Geist',sans-serif] font-normal text-[13px] leading-[17px] text-[#65635a]">
+        <span className="font-['Geist',sans-serif] font-normal text-[14px] leading-[17px] text-[#65635a]">
           {description}
         </span>
       </div>
@@ -1140,7 +1140,7 @@ function ChipGroup({
             key={opt}
             type="button"
             onClick={() => onChange(active ? "" : opt)}
-            className={`h-[36px] px-[14px] rounded-full border-2 font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] transition-colors cursor-pointer ${
+            className={`h-[36px] px-[14px] rounded-full border-2 font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] transition-colors cursor-pointer ${
               active
                 ? "border-[#317dff] bg-[#f2f6ff] text-[#317dff]"
                 : "border-[#efefef] bg-white text-[#363636] hover:border-[#d4d4d4]"

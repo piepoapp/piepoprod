@@ -32,7 +32,7 @@ export function AuthCheckbox({ id, checked, onCheckedChange, error, children }: 
         </CheckboxPrimitive.Root>
         <label
           htmlFor={id}
-          className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] cursor-pointer select-none"
+          className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#75787d] cursor-pointer select-none"
         >
           {children}
         </label>

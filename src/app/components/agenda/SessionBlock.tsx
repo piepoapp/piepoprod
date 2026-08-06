@@ -68,7 +68,7 @@ export function SessionBlock({ session, onClick, hourHeight, startHour, compact 
       {!compact && height >= 70 && !isBlocked && session.amount > 0 && (
         <div className={`flex items-center gap-[4px] ${meta.text} opacity-80 mt-[2px]`}>
           <CurrencyDollar size={11} weight="bold" />
-          <span className="font-['Geist',sans-serif] font-normal text-[11px] leading-[14px]">
+          <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[14px]">
             R$ {session.amount.toFixed(2).replace(".", ",")}
           </span>
         </div>

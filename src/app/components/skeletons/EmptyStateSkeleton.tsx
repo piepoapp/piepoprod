@@ -5,7 +5,7 @@ interface EmptyStateSkeletonProps {
   media?: "image" | "icon";
   /** Reserva o espaço do botão de ação. */
   withAction?: boolean;
-  /** Quantas linhas a descrição real ocupa — mantém a altura idêntica. */
+  /** Total de linhas que a descrição real ocupa — mantém a altura idêntica. */
   descriptionLines?: number;
   className?: string;
 }

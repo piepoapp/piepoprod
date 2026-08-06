@@ -43,7 +43,7 @@ function StatusCard({ label, value, description, iconPath, iconColor, iconBg }: 
             <p className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16.8px] text-[#6b7280]">
               {label}
             </p>
-            <p className="font-['Geist',sans-serif] font-bold text-[32px] leading-[24px] text-[#111827]">
+            <p className="font-['Geist',sans-serif] font-semibold text-[32px] leading-[24px] text-[#111827]">
               <AnimatedNumber value={typeof value === "number" ? value : parseInt(String(value))} />
             </p>
           </div>

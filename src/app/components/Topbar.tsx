@@ -56,7 +56,7 @@ export function Topbar() {
           </svg>
           {unreadCount > 0 && (
             <span className="absolute top-[4px] right-[4px] size-[16px] bg-[#E7000B] rounded-full flex items-center justify-center">
-              <span className="font-['Geist',sans-serif] font-medium text-[10px] text-white leading-none">
+              <span className="font-['Geist',sans-serif] font-medium text-[12px] text-white leading-none">
                 {unreadCount}
               </span>
             </span>
@@ -72,7 +72,7 @@ export function Topbar() {
               {unreadCount > 0 && (
                 <button
                   onClick={markAllRead}
-                  className="font-['Geist',sans-serif] font-medium text-[13px] text-[#317dff] hover:underline cursor-pointer"
+                  className="font-['Geist',sans-serif] font-medium text-[14px] text-[#317dff] hover:underline cursor-pointer"
                 >
                   Marcar todas como lidas
                 </button>
@@ -100,7 +100,7 @@ export function Topbar() {
                         {n.time}
                       </span>
                     </div>
-                    <span className="font-['Geist',sans-serif] font-normal text-[13px] text-[#939393] truncate">
+                    <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#939393] truncate">
                       {n.description}
                     </span>
                   </div>

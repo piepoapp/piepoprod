@@ -38,14 +38,14 @@ function NavItem({ icon, label, active, disabled, badge, onClick }: NavItemProps
         </svg>
       </div>
       <span
-        className={`flex-1 text-left font-['Geist',sans-serif] font-medium text-[14px] leading-[19.2px] ${
-          disabled ? "text-[#c4c4c4]" : active ? "text-[#317dff]" : "text-[#737185]"
-        }`}
+        className={`text-left font-['Geist',sans-serif] font-medium text-[14px] leading-[19.2px] ${
+          badge ? "" : "flex-1"
+        } ${disabled ? "text-[#c4c4c4]" : active ? "text-[#317dff]" : "text-[#737185]"}`}
       >
         {label}
       </span>
       {badge && (
-        <span className="shrink-0 font-['Geist',sans-serif] font-medium text-[11px] leading-[14px] text-[#6b7280] bg-[#f3f4f6] rounded-full px-[8px] py-[2px]">
+        <span className="shrink-0 font-['Geist',sans-serif] font-medium text-[12px] leading-[14px] text-[#6b7280] bg-[#f3f4f6] rounded-full px-[8px] py-[2px]">
           {badge}
         </span>
       )}
@@ -115,7 +115,7 @@ export function Sidebar() {
           trigger={
             <div className="flex items-center gap-[12px] w-full p-[4px] rounded-[8px] hover:bg-gray-50 transition-colors cursor-pointer">
               <div className="size-[32px] rounded-full bg-[#ebf2ff] flex items-center justify-center shrink-0">
-                <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[1] text-[#317dff]">
+                <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[1] text-[#317dff]">
                   {getInitials(user?.user_metadata?.full_name ?? "Psicólogo(a)")}
                 </span>
               </div>

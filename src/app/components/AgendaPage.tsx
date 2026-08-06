@@ -247,7 +247,7 @@ export function AgendaPage() {
                       />
                     )}
                     <span
-                      className={`font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] ${
+                      className={`font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] ${
                         isActive ? "text-[#317dff]" : "text-[#363636]"
                       }`}
                     >
@@ -258,7 +258,7 @@ export function AgendaPage() {
                     <SkeletonBox w={20} h={20} radius={10} />
                   ) : (
                     <span
-                      className={`min-w-[20px] h-[20px] px-[6px] rounded-full flex items-center justify-center font-['Geist',sans-serif] font-medium text-[11px] leading-[14px] ${
+                      className={`min-w-[20px] h-[20px] px-[6px] rounded-full flex items-center justify-center font-['Geist',sans-serif] font-medium text-[12px] leading-[14px] ${
                         isActive
                           ? "bg-[#317dff] text-white"
                           : "bg-[#f3f4f6] text-[#65635a]"
@@ -300,7 +300,7 @@ export function AgendaPage() {
                   className="flex items-center gap-[10px] p-[8px] rounded-[8px] hover:bg-[#fafafa] transition-colors cursor-pointer text-left"
                 >
                   <div className="size-[28px] rounded-full bg-[#ebf2ff] flex items-center justify-center shrink-0">
-                    <span className="font-['Geist',sans-serif] font-medium text-[11px] text-[#317dff]">
+                    <span className="font-['Geist',sans-serif] font-medium text-[12px] text-[#317dff]">
                       {s.initials}
                     </span>
                   </div>
@@ -308,7 +308,7 @@ export function AgendaPage() {
                     <span className="font-['Geist',sans-serif] font-medium text-[12px] leading-[16px] text-black truncate">
                       {s.patientName}
                     </span>
-                    <span className="font-['Geist',sans-serif] font-normal text-[11px] leading-[14px] text-[#737185]">
+                    <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#737185]">
                       {s.startTime} · {meta.label}
                     </span>
                   </div>
@@ -341,7 +341,7 @@ export function AgendaPage() {
               className="h-[40px] px-[16px] rounded-[8px] bg-[#317dff] hover:bg-[#2968d9] flex items-center gap-[8px] transition-colors cursor-pointer"
             >
               <Plus size={14} weight="bold" className="text-white" />
-              <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-white">
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-white">
                 Agendar agora
               </span>
             </button>
@@ -361,7 +361,7 @@ export function AgendaPage() {
             <button
               type="button"
               onClick={handleToday}
-              className="h-[40px] px-[14px] rounded-[8px] border border-[#efefef] bg-white hover:bg-[#fafafa] transition-colors cursor-pointer font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-[#363636]"
+              className="h-[40px] px-[14px] rounded-[8px] border border-[#efefef] bg-white hover:bg-[#fafafa] transition-colors cursor-pointer font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-[#363636]"
             >
               Hoje
             </button>
@@ -394,7 +394,7 @@ export function AgendaPage() {
                   key={v}
                   type="button"
                   onClick={() => setView(v)}
-                  className={`h-[32px] px-[14px] rounded-[7px] font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] transition-colors cursor-pointer ${
+                  className={`h-[32px] px-[14px] rounded-[7px] font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] transition-colors cursor-pointer ${
                     view === v
                       ? "bg-[#ebf2ff] text-[#317dff]"
                       : "text-[#65635a] hover:bg-[#fafafa]"
@@ -410,7 +410,7 @@ export function AgendaPage() {
               className="h-[40px] px-[16px] rounded-[8px] bg-[#317dff] hover:bg-[#2968d9] flex items-center gap-[8px] transition-colors cursor-pointer"
             >
               <Plus size={14} weight="bold" className="text-white" />
-              <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-white">
+              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-white">
                 Nova sessão
               </span>
             </button>
@@ -570,7 +570,7 @@ function StatCard({
           {value}
         </span>
         {hint && (
-          <span className="font-['Geist',sans-serif] font-normal text-[11px] leading-[14px] text-[#a1a1aa]">
+          <span className="font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#a1a1aa]">
             {hint}
           </span>
         )}
@@ -601,7 +601,7 @@ function MiniCalendar({
   return (
     <div className="flex flex-col gap-[8px]">
       <div className="flex items-center justify-between">
-        <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-black capitalize">
+        <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-black capitalize">
           {monthLabels[month.getMonth()]} {month.getFullYear()}
         </span>
         <div className="flex items-center gap-[2px]">
@@ -625,7 +625,7 @@ function MiniCalendar({
         {weekDayLabels.map((d) => (
           <div
             key={d}
-            className="text-center font-['Geist',sans-serif] font-normal text-[10px] leading-[14px] text-[#a1a1aa] py-[2px]"
+            className="text-center font-['Geist',sans-serif] font-normal text-[12px] leading-[14px] text-[#a1a1aa] py-[2px]"
           >
             {d[0]}
           </div>
@@ -651,7 +651,7 @@ function MiniCalendar({
                   : "text-[#d4d4d4] hover:bg-[#fafafa]"
               }`}
             >
-              <span className="font-['Geist',sans-serif] font-medium text-[11px] leading-[14px]">
+              <span className="font-['Geist',sans-serif] font-medium text-[12px] leading-[14px]">
                 {d.getDate()}
               </span>
               {hasSession && !isSelected && (

@@ -102,7 +102,7 @@ export function BlockTimeModal({
               <p className="font-['Geist',sans-serif] font-medium text-[20px] leading-[24px] text-black">
                 Bloquear horário
               </p>
-              <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#4b5563]">
+              <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#4b5563]">
                 O período ficará indisponível para novos agendamentos
               </p>
             </div>
@@ -152,7 +152,7 @@ export function BlockTimeModal({
                         head_cell:
                           "w-9 font-['Geist',sans-serif] font-medium text-[12px] leading-[16px] text-[#737373] capitalize",
                         cell: "relative p-0 text-center [&:has([aria-selected])]:bg-transparent",
-                        day: "size-9 rounded-[8px] font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-black hover:bg-[#f2f6ff] hover:text-[#317dff] transition-colors cursor-pointer aria-selected:opacity-100",
+                        day: "size-9 rounded-[8px] font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-black hover:bg-[#f2f6ff] hover:text-[#317dff] transition-colors cursor-pointer aria-selected:opacity-100",
                         day_selected:
                           "!bg-[#317dff] !text-white hover:!bg-[#2968d9] hover:!text-white focus:!bg-[#317dff] focus:!text-white",
                         day_today: "text-[#317dff] font-medium",
@@ -207,7 +207,7 @@ export function BlockTimeModal({
           {!validRange && (
             <div className="flex items-start gap-[10px] w-full bg-[#fef2f2] border border-[#fecaca] rounded-[10px] px-[14px] py-[10px] -mt-[12px]">
               <Info size={16} weight="bold" className="text-[#b91c1c] shrink-0 mt-[2px]" />
-              <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#991b1b]">
+              <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#991b1b]">
                 O horário de fim deve ser maior que o de início.
               </p>
             </div>
@@ -216,7 +216,7 @@ export function BlockTimeModal({
           {validRange && conflict && (
             <div className="flex items-start gap-[10px] w-full bg-[#fef9c3] border border-[#fde68a] rounded-[10px] px-[14px] py-[10px] -mt-[12px]">
               <Info size={16} weight="bold" className="text-[#854d0e] shrink-0 mt-[2px]" />
-              <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#854d0e]">
+              <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#854d0e]">
                 Existe uma sessão de <span className="font-medium">{conflict.patientName}</span> ({conflict.startTime} – {conflict.endTime}) nesse intervalo.
               </p>
             </div>
@@ -229,7 +229,7 @@ export function BlockTimeModal({
                   key={opt}
                   type="button"
                   onClick={() => setReason(opt)}
-                  className={`h-[36px] px-[14px] rounded-full border-2 font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] transition-colors cursor-pointer ${
+                  className={`h-[36px] px-[14px] rounded-full border-2 font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] transition-colors cursor-pointer ${
                     reason === opt
                       ? "border-[#317dff] bg-[#f2f6ff] text-[#317dff]"
                       : "border-[#efefef] bg-white text-[#363636] hover:border-[#d4d4d4]"

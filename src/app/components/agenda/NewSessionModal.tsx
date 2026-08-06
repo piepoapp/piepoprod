@@ -139,7 +139,7 @@ export function NewSessionModal({
             <p className="font-['Geist',sans-serif] font-medium text-[20px] leading-[24px] text-black">
               Sessão agendada
             </p>
-            <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#4b5563]">
+            <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#4b5563]">
               {confirmation.patientName} · {format(parse(confirmation.date, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")} · {confirmation.startTime}–{confirmation.endTime}
             </p>
           </div>
@@ -171,14 +171,14 @@ export function NewSessionModal({
                   {copied ? (
                     <>
                       <Check size={14} weight="bold" className="text-[#10b981]" />
-                      <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-[#047857]">
+                      <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-[#047857]">
                         Copiado
                       </span>
                     </>
                   ) : (
                     <>
                       <Copy size={14} weight="bold" className="text-[#363636]" />
-                      <span className="font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-[#363636]">
+                      <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-[#363636]">
                         Copiar
                       </span>
                     </>
@@ -218,7 +218,7 @@ export function NewSessionModal({
             <p className="font-['Geist',sans-serif] font-medium text-[20px] leading-[24px] text-black">
               Nova sessão
             </p>
-            <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#4b5563]">
+            <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#4b5563]">
               Agende uma sessão para um paciente existente
             </p>
           </div>
@@ -281,7 +281,7 @@ export function NewSessionModal({
                         head_cell:
                           "w-9 font-['Geist',sans-serif] font-medium text-[12px] leading-[16px] text-[#737373] capitalize",
                         cell: "relative p-0 text-center [&:has([aria-selected])]:bg-transparent",
-                        day: "size-9 rounded-[8px] font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] text-black hover:bg-[#f2f6ff] hover:text-[#317dff] transition-colors cursor-pointer aria-selected:opacity-100",
+                        day: "size-9 rounded-[8px] font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] text-black hover:bg-[#f2f6ff] hover:text-[#317dff] transition-colors cursor-pointer aria-selected:opacity-100",
                         day_selected:
                           "!bg-[#317dff] !text-white hover:!bg-[#2968d9] hover:!text-white focus:!bg-[#317dff] focus:!text-white",
                         day_today: "text-[#317dff] font-medium",
@@ -327,7 +327,7 @@ export function NewSessionModal({
           {conflict && (
             <div className="flex items-start gap-[10px] w-full bg-[#fef2f2] border border-[#fecaca] rounded-[10px] px-[14px] py-[10px] -mt-[12px]">
               <Info size={16} weight="bold" className="text-[#b91c1c] shrink-0 mt-[2px]" />
-              <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#991b1b]">
+              <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#991b1b]">
                 Conflito com <span className="font-medium">{conflict.patientName}</span> ({conflict.startTime} – {conflict.endTime}).
               </p>
             </div>
@@ -360,7 +360,7 @@ export function NewSessionModal({
           {modality === "online" && (
             <div className="flex items-start gap-[10px] bg-[#f2f6ff] border border-[#c7dbff] rounded-[10px] px-[14px] py-[10px]">
               <VideoCamera size={16} weight="bold" className="text-[#317dff] shrink-0 mt-[2px]" />
-              <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#1e3a8a]">
+              <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#1e3a8a]">
                 Um link do <span className="font-medium">Google Meet</span> será gerado automaticamente ao salvar a sessão.
               </p>
             </div>
@@ -374,7 +374,7 @@ export function NewSessionModal({
                   key={opt}
                   type="button"
                   onClick={() => setRecurrence(opt)}
-                  className={`h-[36px] px-[14px] rounded-full border-2 font-['Geist',sans-serif] font-medium text-[13px] leading-[16px] transition-colors cursor-pointer ${
+                  className={`h-[36px] px-[14px] rounded-full border-2 font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] transition-colors cursor-pointer ${
                     recurrence === opt
                       ? "border-[#317dff] bg-[#f2f6ff] text-[#317dff]"
                       : "border-[#efefef] bg-white text-[#363636] hover:border-[#d4d4d4]"

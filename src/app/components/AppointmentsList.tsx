@@ -102,15 +102,15 @@ function AppointmentModal({ appointment, onClose }: { appointment: Appointment; 
               <div className="flex items-center gap-[10px] bg-[#f9fafb] rounded-[8px] border border-[#e5e7eb] p-[12px]">
                 <Calendar size={16} className="text-[#939393] shrink-0" />
                 <div className="flex flex-col gap-[2px]">
-                  <span className="font-['Geist',sans-serif] font-normal text-[11px] text-[#939393]">Data e hora</span>
-                  <span className="font-['Geist',sans-serif] font-medium text-[13px] text-[#111827]">{appointment.time}</span>
+                  <span className="font-['Geist',sans-serif] font-normal text-[12px] text-[#939393]">Data e hora</span>
+                  <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#111827]">{appointment.time}</span>
                 </div>
               </div>
               <div className="flex items-center gap-[10px] bg-[#f9fafb] rounded-[8px] border border-[#e5e7eb] p-[12px]">
                 <Clock size={16} className="text-[#939393] shrink-0" />
                 <div className="flex flex-col gap-[2px]">
-                  <span className="font-['Geist',sans-serif] font-normal text-[11px] text-[#939393]">Duração</span>
-                  <span className="font-['Geist',sans-serif] font-medium text-[13px] text-[#111827]">{details.duration}</span>
+                  <span className="font-['Geist',sans-serif] font-normal text-[12px] text-[#939393]">Duração</span>
+                  <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#111827]">{details.duration}</span>
                 </div>
               </div>
             </div>
@@ -131,7 +131,7 @@ function AppointmentModal({ appointment, onClose }: { appointment: Appointment; 
             </div>
             {isOnline && details.link && (
               <div className="flex items-center gap-[8px] bg-[#f9fafb] rounded-[8px] border border-[#e5e7eb] px-[12px] py-[10px]">
-                <span className="font-['Geist',sans-serif] font-normal text-[13px] text-[#317dff] flex-1 truncate">
+                <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#317dff] flex-1 truncate">
                   {details.link}
                 </span>
                 <button
@@ -254,7 +254,7 @@ function AppointmentRow({ appointment, onView }: { appointment: Appointment; onV
             </span>
           </div>
           <div className="flex flex-col gap-[4px]">
-            <span className="font-['Geist',sans-serif] font-medium leading-[19.2px] text-[#1c1c1c] text-[15px]">
+            <span className="font-['Geist',sans-serif] font-medium leading-[19.2px] text-[#1c1c1c] text-[16px]">
               {appointment.name}
             </span>
             <div className="flex items-center gap-[6px]">
@@ -346,7 +346,7 @@ export function AppointmentsList({ appointments, loading = false }: Appointments
         {/* Appointments */}
         {loading ? (
           emptyHint ? (
-            <EmptyStateSkeleton media="image" withAction descriptionLines={4} />
+            <EmptyStateSkeleton media="image" withAction descriptionLines={3} />
           ) : (
             <ListSkeleton rows={4} />
           )
@@ -354,7 +354,7 @@ export function AppointmentsList({ appointments, loading = false }: Appointments
           <EmptyState
             image={emptyAppointmentsImage}
             title="Nenhum atendimento agendado"
-            description="Você ainda não possui atendimentos agendados. Para começar, cadastre um paciente e agende sua primeira sessão. Assim, seus próximos compromissos aparecerão aqui automaticamente."
+            description="Você ainda não tem atendimentos agendados. Cadastre um paciente e agende sua primeira sessão. Seus próximos atendimentos aparecerão aqui."
             action={{
               label: "Cadastrar primeiro paciente",
               icon: <PlusCircle size={16} weight="bold" />,

@@ -36,7 +36,7 @@ export function ForgotPasswordPage() {
   if (sent) {
     return (
       <AuthLayout title="Verifique seu e-mail" subtitle="Enviamos um link para redefinir sua senha">
-        <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] text-center">
+        <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#75787d] text-center">
           Não recebeu?{" "}
           <button
             type="button"
@@ -48,7 +48,7 @@ export function ForgotPasswordPage() {
         </p>
         <Link
           to="/login"
-          className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] text-center hover:underline"
+          className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#75787d] text-center hover:underline"
         >
           Voltar para o login
         </Link>
@@ -87,7 +87,7 @@ export function ForgotPasswordPage() {
           </span>
         </button>
 
-        <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] text-center">
+        <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#75787d] text-center">
           Lembrou a senha?{" "}
           <Link to="/login" className="font-medium text-[#317dff] hover:underline">
             Entrar
