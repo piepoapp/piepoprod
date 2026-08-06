@@ -24,6 +24,10 @@ export function SignupPage() {
   const { user, signUp } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  // Durante o cadastro a sessão aparece no meio do await, e o guard de
+  // "já logado" abaixo mandaria o usuário para o Dashboard. Este sinal desliga
+  // o guard para que a navegação para o onboarding seja a única a valer.
+  const [signingUp, setSigningUp] = useState(false);
   const {
     register,
     handleSubmit,
@@ -32,7 +36,7 @@ export function SignupPage() {
     formState: { errors },
   } = useForm<FormValues>({ defaultValues: { acceptedTerms: false } });
 
-  if (user) return <Navigate to="/" replace />;
+  if (user && !signingUp) return <Navigate to="/" replace />;
 
   const passwordValue = watch("password");
   const confirmValue = watch("confirmPassword");
@@ -42,14 +46,18 @@ export function SignupPage() {
 
   async function onSubmit(data: FormValues) {
     setSubmitting(true);
+    setSigningUp(true);
     const { error } = await signUp(data.email, data.password, data.fullName, data.phone);
     setSubmitting(false);
     if (error) {
+      setSigningUp(false);
       toast.error("Não foi possível criar sua conta. " + error);
       return;
     }
-    toast.success("Conta criada com sucesso!");
-    navigate("/");
+    // O onboarding é a continuação do cadastro: vamos direto para ele, sem
+    // passar pelo Dashboard. A confirmação de conta criada fica por conta do
+    // próprio onboarding, sem toast.
+    navigate("/onboarding", { replace: true });
   }
 
   return (
@@ -159,7 +167,7 @@ export function SignupPage() {
           </span>
         </button>
 
-        <p className="font-['Geist',sans-serif] font-normal text-[13px] leading-[18px] text-[#75787d] text-center">
+        <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#75787d] text-center">
           Já tem conta?{" "}
           <Link to="/login" className="font-medium text-[#317dff] hover:underline">
             Entrar

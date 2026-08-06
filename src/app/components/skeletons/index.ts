@@ -9,6 +9,7 @@ export {
 } from "./CardSkeleton";
 export { ListSkeleton } from "./ListSkeleton";
 export { EmptyStateSkeleton } from "./EmptyStateSkeleton";
+export { OnboardingSkeleton } from "./OnboardingSkeleton";
 export { TableSkeleton } from "./TableSkeleton";
 export { FormSkeleton, FieldSkeleton } from "./FormSkeleton";
 export { ChartSkeleton } from "./ChartSkeleton";

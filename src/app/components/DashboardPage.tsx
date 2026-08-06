@@ -8,6 +8,7 @@ import { listSessions } from "../../lib/api/sessions";
 import { toISODate, startOfWeek, addDays, type Session } from "../data/agendaData";
 import type { Appointment } from "../data/mockData";
 import { useSmoothLoading } from "../hooks/useSmoothLoading";
+import { consumeJustOnboarded, playCue } from "../../lib/sound";
 
 const weekDays = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -55,6 +56,14 @@ export function DashboardPage() {
   const cardsLoading = useSmoothLoading(patientsLoading || sessionsLoading);
   const sessionsPending = useSmoothLoading(sessionsLoading);
 
+  // Primeiro contato com o Dashboard logo após concluir o onboarding.
+  // A marca é consumida na leitura, então o som não repete em reload nem ao voltar.
+  useEffect(() => {
+    if (consumeJustOnboarded()) {
+      playCue("arrival");
+    }
+  }, []);
+
   const todayIso = toISODate(new Date());
   const scheduled = sessions.filter(
     (s) => s.date >= todayIso && s.status !== "cancelled" && s.status !== "blocked",
@@ -80,7 +89,7 @@ export function DashboardPage() {
     <div className="flex flex-col gap-[24px] p-[32px]">
       {/* Header */}
       <div className="flex flex-col gap-[4px]">
-        <h1 className="font-['Geist',sans-serif] font-bold leading-[38.4px] tracking-[-0.75px] text-[#111827] text-[28px]">
+        <h1 className="font-['Geist',sans-serif] font-semibold leading-[38.4px] tracking-[-0.75px] text-[#111827] text-[28px]">
           Olá{firstName ? `, ${firstName}` : ""} 👋
         </h1>
         <p className="font-['Geist',sans-serif] font-normal text-[16px] leading-[19.2px] text-[#6b7280]">
