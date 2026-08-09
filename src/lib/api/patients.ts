@@ -56,6 +56,64 @@ interface PatientRow {
   notes: string;
 }
 
+/** Campos livres da anamnese, gravados como jsonb em patients.clinical_info. */
+export interface PatientClinicalInfo {
+  motivoConsulta?: string;
+  tratamentosAnteriores?: string;
+  diagnosticosPrevios?: string;
+  medicamentosEmUso?: string;
+  situacaoProfissional?: string;
+  comQuemMora?: string;
+  observacoesClinicas?: string;
+}
+
+/** Condições comerciais, gravadas como jsonb em patients.billing_info. */
+export interface PatientBillingInfo {
+  modalidadePagamento?: string;
+  nomePlano?: string;
+  numeroCarteirinha?: string;
+  validadePlano?: string;
+  coparticipacao?: string;
+  valorSessao?: string;
+  frequenciaPadrao?: string;
+  formaRecebimento?: string;
+  quandoCobrar?: string;
+  politicaCancelamento?: string;
+}
+
+/**
+ * Paciente com tudo que o prontuário precisa mostrar — a listagem continua
+ * usando o Patient enxuto, então só a tela de detalhe paga o custo do payload.
+ */
+export interface PatientDetail extends Patient {
+  birthDate: string | null;
+  cep: string | null;
+  estado: string | null;
+  cidade: string | null;
+  emergenciaNome: string | null;
+  emergenciaTelefone: string | null;
+  clinicalInfo: PatientClinicalInfo;
+  billingInfo: PatientBillingInfo;
+  lgpdAccepted: boolean;
+  respAccepted: boolean;
+  consentDate: string | null;
+  consentMethod: string | null;
+}
+
+interface PatientDetailRow extends PatientRow {
+  cep: string | null;
+  estado: string | null;
+  cidade: string | null;
+  emergencia_nome: string | null;
+  emergencia_telefone: string | null;
+  clinical_info: PatientClinicalInfo | null;
+  billing_info: PatientBillingInfo | null;
+  lgpd_accepted: boolean | null;
+  resp_accepted: boolean | null;
+  consent_date: string | null;
+  consent_method: string | null;
+}
+
 const genderLabel: Record<string, Patient["gender"]> = {
   feminino: "Feminino",
   masculino: "Masculino",
@@ -111,6 +169,27 @@ export async function listPatients(): Promise<Patient[]> {
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data as PatientRow[]).map(mapRowToPatient);
+}
+
+export async function getPatient(id: string): Promise<PatientDetail> {
+  const { data, error } = await supabase.from("patients").select("*").eq("id", id).single();
+  if (error) throw error;
+  const row = data as PatientDetailRow;
+  return {
+    ...mapRowToPatient(row),
+    birthDate: row.birth_date,
+    cep: row.cep,
+    estado: row.estado,
+    cidade: row.cidade,
+    emergenciaNome: row.emergencia_nome,
+    emergenciaTelefone: row.emergencia_telefone,
+    clinicalInfo: row.clinical_info ?? {},
+    billingInfo: row.billing_info ?? {},
+    lgpdAccepted: row.lgpd_accepted ?? false,
+    respAccepted: row.resp_accepted ?? false,
+    consentDate: row.consent_date,
+    consentMethod: row.consent_method,
+  };
 }
 
 export async function createPatient(

@@ -69,6 +69,17 @@ export async function listSessions(): Promise<Session[]> {
   return (data as SessionRow[]).map(mapRowToSession);
 }
 
+export async function listSessionsByPatient(patientId: string): Promise<Session[]> {
+  const { data, error } = await supabase
+    .from("sessions")
+    .select("*")
+    .eq("patient_id", patientId)
+    .order("date", { ascending: false })
+    .order("start_time", { ascending: false });
+  if (error) throw error;
+  return (data as SessionRow[]).map(mapRowToSession);
+}
+
 export async function createSession(
   session: Omit<Session, "id">,
   ownerId: string,

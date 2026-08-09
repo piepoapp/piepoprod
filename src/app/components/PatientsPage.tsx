@@ -1,24 +1,21 @@
-import { useState, useRef, useEffect } from "react";
-import { useSearchParams } from "react-router";
+﻿import { useState, useRef, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import type { Patient } from "../data/mockData";
 import { listPatients, updatePatientStatus, deletePatient as deletePatientApi } from "../../lib/api/patients";
 import {
   MagnifyingGlass,
   Plus,
-  X,
   Phone,
-  EnvelopeSimple,
   CalendarBlank,
   VideoCamera,
   MapPin,
   ArrowsClockwise,
   FunnelSimple,
   DotsThree,
-  ArrowsDownUp,
   User,
   Users,
-  Eye,
+  Notepad,
   Pause,
   Play,
   Trash,
@@ -51,12 +48,6 @@ const statusConfig = {
   },
 };
 
-const modalityIcon = {
-  Online: VideoCamera,
-  Presencial: MapPin,
-  "Híbrido": ArrowsClockwise,
-};
-
 function formatStartDate(dateStr: string): string {
   const d = new Date(dateStr + "T12:00:00");
   const month = d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
@@ -64,146 +55,13 @@ function formatStartDate(dateStr: string): string {
   return `Desde ${month} de ${year}`;
 }
 
-function formatShortDate(dateStr: string | null): string {
-  if (!dateStr) return "—";
-  const d = new Date(dateStr + "T12:00:00");
-  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
-}
-
-function PatientDetailPanel({ patient, onClose }: { patient: Patient; onClose: () => void }) {
-  const status = statusConfig[patient.status];
-  const ModalityIcon = modalityIcon[patient.modality];
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-end">
-      <div className="absolute inset-0 bg-black/20" onClick={onClose} />
-      <div className="relative w-[480px] h-full bg-white shadow-xl border-l border-[#e5e7eb] overflow-y-auto animate-in slide-in-from-right">
-        <div className="sticky top-0 bg-white border-b border-[#e5e7eb] p-[24px] flex items-start justify-between z-10">
-          <div className="flex items-center gap-[16px]">
-            <div className="size-[56px] rounded-full bg-[#ebf2ff] flex items-center justify-center shrink-0">
-              <span className="font-['Geist',sans-serif] font-medium text-[20px] text-[#317dff]">
-                {patient.initials}
-              </span>
-            </div>
-            <div className="flex flex-col gap-[4px]">
-              <span className="font-['Geist',sans-serif] font-medium text-[20px] leading-[24px] text-[#111827]">
-                {patient.name}
-              </span>
-              <div className="flex items-center gap-[8px]">
-                <div className={`flex items-center gap-[6px] rounded-full px-[10px] py-[2px] ${status.bg}`}>
-                  <div className={`size-[6px] rounded-full ${status.dot}`} />
-                  <span className={`font-['Geist',sans-serif] font-medium text-[12px] ${status.text}`}>
-                    {status.label}
-                  </span>
-                </div>
-                <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#939393]">
-                  {patient.age} anos • {patient.gender}
-                </span>
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-[8px] rounded-[8px] hover:bg-[#f3f4f6] cursor-pointer transition-colors"
-          >
-            <X size={20} weight="bold" className="text-[#6b7280]" />
-          </button>
-        </div>
-
-        <div className="p-[24px] flex flex-col gap-[24px]">
-          <div className="flex flex-col gap-[12px]">
-            <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#939393] uppercase tracking-[0.5px]">
-              Contato
-            </span>
-            <div className="flex flex-col gap-[8px]">
-              <div className="flex items-center gap-[10px]">
-                <EnvelopeSimple size={16} weight="bold" className="text-[#939393]" />
-                <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#111827]">
-                  {patient.email}
-                </span>
-              </div>
-              <div className="flex items-center gap-[10px]">
-                <Phone size={16} weight="bold" className="text-[#939393]" />
-                <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#111827]">
-                  {patient.phone}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="h-px bg-[#e5e7eb]" />
-
-          <div className="flex flex-col gap-[12px]">
-            <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#939393] uppercase tracking-[0.5px]">
-              Sessões
-            </span>
-            <div className="grid grid-cols-2 gap-[12px]">
-              <InfoCard label="Total de sessões" value={String(patient.totalSessions)} />
-              <InfoCard label="Frequência" value={patient.frequency} />
-              <InfoCard label="Última sessão" value={formatShortDate(patient.lastSession)} />
-              <InfoCard label="Próxima sessão" value={formatShortDate(patient.nextSession)} />
-            </div>
-          </div>
-
-          <div className="h-px bg-[#e5e7eb]" />
-
-          <div className="flex flex-col gap-[12px]">
-            <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#939393] uppercase tracking-[0.5px]">
-              Detalhes
-            </span>
-            <div className="flex flex-col gap-[8px]">
-              <div className="flex items-center gap-[10px]">
-                <ModalityIcon size={16} className="text-[#939393]" />
-                <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#111827]">
-                  {patient.modality}
-                </span>
-              </div>
-              <div className="flex items-center gap-[10px]">
-                <CalendarBlank size={16} weight="bold" className="text-[#939393]" />
-                <span className="font-['Geist',sans-serif] font-normal text-[14px] text-[#111827]">
-                  Início em {formatShortDate(patient.startDate)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="h-px bg-[#e5e7eb]" />
-
-          <div className="flex flex-col gap-[12px]">
-            <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#939393] uppercase tracking-[0.5px]">
-              Observações
-            </span>
-            <div className="bg-[#f9fafb] rounded-[8px] border border-[#e5e7eb] p-[16px]">
-              <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[22px] text-[#374151]">
-                {patient.notes}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function InfoCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-[#f9fafb] rounded-[8px] border border-[#e5e7eb] p-[12px] flex flex-col gap-[4px]">
-      <span className="font-['Geist',sans-serif] font-normal text-[12px] text-[#939393]">
-        {label}
-      </span>
-      <span className="font-['Geist',sans-serif] font-medium text-[14px] text-[#111827]">
-        {value}
-      </span>
-    </div>
-  );
-}
 
 type FilterStatus = "todos" | "ativo" | "inativo" | "pausado";
 
 export function PatientsPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("todos");
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [newPatientOpen, setNewPatientOpen] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -461,7 +319,8 @@ export function PatientsPage() {
             return (
               <div
                 key={patient.id}
-                className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_60px] border-b border-[#e6e6e1] last:border-b-0 last:rounded-b-[8px] hover:bg-[#fafafa] transition-colors animate-in fade-in"
+                onClick={() => navigate(`/pacientes/${patient.id}`)}
+                className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_60px] border-b border-[#e6e6e1] last:border-b-0 last:rounded-b-[8px] hover:bg-[#fafafa] transition-colors animate-in fade-in cursor-pointer"
               >
                 {/* Paciente */}
                 <div className="h-[64px] flex items-center p-[24px] gap-[12px] min-w-0">
@@ -506,8 +365,11 @@ export function PatientsPage() {
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="h-[64px] flex items-center justify-center p-[24px]">
+                {/* Actions — o clique não deve disparar a navegação da linha */}
+                <div
+                  className="h-[64px] flex items-center justify-center p-[24px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <DropdownMenu
                     trigger={
                       <button
@@ -518,9 +380,9 @@ export function PatientsPage() {
                     }
                     items={[
                       {
-                        label: "Ver detalhes",
-                        icon: <Eye size={16} weight="bold" />,
-                        onClick: () => setSelectedPatient(patient),
+                        label: "Abrir prontuário",
+                        icon: <Notepad size={16} weight="bold" />,
+                        onClick: () => navigate(`/pacientes/${patient.id}`),
                       },
                       {
                         label: patient.status === "pausado" ? "Retomar paciente" : "Pausar paciente",
@@ -554,13 +416,6 @@ export function PatientsPage() {
         onClose={() => setNewPatientOpen(false)}
         onCreated={(patient) => setPatients((list) => [patient, ...list])}
       />
-
-      {selectedPatient && (
-        <PatientDetailPanel
-          patient={selectedPatient}
-          onClose={() => setSelectedPatient(null)}
-        />
-      )}
 
       <ConfirmDialog
         open={!!patientToDelete}

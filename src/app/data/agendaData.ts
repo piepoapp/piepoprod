@@ -3,6 +3,7 @@ export type SessionStatus =
   | "pending"
   | "cancelled"
   | "first"
+  | "completed"
   | "blocked";
 
 export type SessionPayment = "paid" | "pending" | "overdue" | "covenio" | "free";
@@ -62,6 +63,15 @@ export const statusMeta: Record<
     text: "text-[#6d28d9]",
     dot: "bg-[#8b5cf6]",
     soft: "bg-[#ede9fe]",
+  },
+  // Estado passado: recua visualmente para não competir com "Confirmada".
+  completed: {
+    label: "Realizada",
+    bg: "bg-[#f1f5f9]",
+    border: "border-[#64748b]",
+    text: "text-[#334155]",
+    dot: "bg-[#64748b]",
+    soft: "bg-[#e2e8f0]",
   },
   blocked: {
     label: "Bloqueio",

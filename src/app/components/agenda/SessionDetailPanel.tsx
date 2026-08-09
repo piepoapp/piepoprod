@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import {
   X,
   VideoCamera,
@@ -31,6 +32,7 @@ interface Props {
 }
 
 export function SessionDetailPanel({ session, onClose, onAction, onDelete }: Props) {
+  const navigate = useNavigate();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const meta = statusMeta[session.status];
   const pay = paymentMeta[session.payment];
@@ -112,6 +114,19 @@ export function SessionDetailPanel({ session, onClose, onAction, onDelete }: Pro
               Ações rápidas
             </p>
             <div className="grid grid-cols-2 gap-[8px]">
+              {/* Caminho mais curto do fluxo pós-sessão: leva ao prontuário com o
+                  compositor já focado e a sessão vinculada. */}
+              {session.patientId && session.status !== "blocked" && (
+                <ActionButton
+                  icon={Notepad}
+                  label="Registrar evolução"
+                  onClick={() =>
+                    navigate(`/pacientes/${session.patientId}?registrar=${session.id}`)
+                  }
+                  primary
+                  full
+                />
+              )}
               <ActionButton icon={CheckCircle} label="Confirmar" onClick={() => onAction("confirm")} primary />
               <ActionButton icon={ArrowsClockwise} label="Remarcar" onClick={() => onAction("reschedule")} />
               <ActionButton icon={ChatCircleText} label="Mensagem" onClick={() => onAction("message")} />

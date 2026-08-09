@@ -124,6 +124,16 @@ export function AgendaPage() {
     setSelectedSlot(null);
   }
 
+  // Vem do prontuário: /agenda?agendar=<patientId> — abre o modal de nova
+  // sessão já com o paciente escolhido, sem passar pelo banner de pré-cadastro.
+  useEffect(() => {
+    const agendarId = searchParams.get("agendar");
+    if (!agendarId) return;
+    openNewSession(undefined, undefined, agendarId);
+    searchParams.delete("agendar");
+    setSearchParams(searchParams, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   function handleSlotClick(date: string, time: string) {
     setSelectedSlot((prev) =>
       prev && prev.date === date && prev.time === time ? null : { date, time },
