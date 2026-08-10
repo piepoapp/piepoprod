@@ -191,6 +191,24 @@ export function timeToMinutes(t: string) {
   return h * 60 + m;
 }
 
+/** O dia já terminou — nenhum horário dele aceita novo agendamento. */
+export function isPastDay(dateISO: string) {
+  return dateISO < toISODate(new Date());
+}
+
+/**
+ * O slot já passou. Em dias anteriores, todos passaram; hoje, só os que
+ * começam antes de agora. Usado tanto para desabilitar visualmente quanto
+ * para barrar o clique — as duas coisas precisam concordar.
+ */
+export function isPastSlot(dateISO: string, time: string) {
+  const today = toISODate(new Date());
+  if (dateISO < today) return true;
+  if (dateISO > today) return false;
+  const now = new Date();
+  return timeToMinutes(time) < now.getHours() * 60 + now.getMinutes();
+}
+
 export const weekDayLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 export const monthLabels = [
   "Janeiro",

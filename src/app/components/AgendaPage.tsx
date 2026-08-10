@@ -13,6 +13,7 @@ import {
   Funnel,
   CurrencyCircleDollar,
   Confetti,
+  Gear,
 } from "@phosphor-icons/react";
 import {
   addDays,
@@ -22,11 +23,14 @@ import {
   weekDayLabels,
   getSessionsByDate,
   getSessionsByWeek,
+  getSessionsByMonth,
   expandRecurrence,
+  isPastSlot,
   statusMeta,
   type Session,
   type SessionStatus,
 } from "../data/agendaData";
+import { isSlotAvailable } from "../data/availability";
 import type { Patient } from "../data/mockData";
 import { listPatients } from "../../lib/api/patients";
 import {
@@ -43,6 +47,8 @@ import { MonthView } from "./agenda/MonthView";
 import { SessionDetailPanel } from "./agenda/SessionDetailPanel";
 import { NewSessionModal } from "./agenda/NewSessionModal";
 import { BlockTimeModal } from "./agenda/BlockTimeModal";
+import { AvailabilityModal } from "./agenda/AvailabilityModal";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import {
   AgendaGridSkeleton,
   ListSkeleton,
@@ -62,7 +68,9 @@ const filterDefs: { value: SessionStatus | "all"; label: string }[] = [
 ];
 
 export function AgendaPage() {
-  const { user } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
+  // Dias e horários definidos no onboarding: a agenda mostra exatamente eles.
+  const availability = profile?.availability ?? null;
   const [searchParams, setSearchParams] = useSearchParams();
   const novoPacienteId = searchParams.get("novoPaciente");
 
@@ -100,6 +108,7 @@ export function AgendaPage() {
   }>({ open: false });
   const [filter, setFilter] = useState<SessionStatus | "all">("all");
   const [search, setSearch] = useState("");
+  const [availabilityOpen, setAvailabilityOpen] = useState(false);
 
   const weekStart = useMemo(() => startOfWeek(cursor), [cursor]);
 
@@ -135,6 +144,16 @@ export function AgendaPage() {
   }, [searchParams, setSearchParams]);
 
   function handleSlotClick(date: string, time: string) {
+    // Prevenir vale mais do que avisar depois: em horário passado o menu do
+    // slot nem abre, para não oferecer uma ação que o modal vai recusar.
+    if (isPastSlot(date, time)) {
+      toast.info("Não é possível agendar em datas ou horários que já passaram.");
+      return;
+    }
+    if (!isSlotAvailable(availability, date, time)) {
+      toast.info("Este horário está fora da sua disponibilidade.");
+      return;
+    }
     setSelectedSlot((prev) =>
       prev && prev.date === date && prev.time === time ? null : { date, time },
     );
@@ -199,6 +218,20 @@ export function AgendaPage() {
 
   const todaySessions = getSessionsByDate(sessions, toISODate(new Date()));
   const weekSessions = getSessionsByWeek(sessions, weekStart);
+
+  /**
+   * Sessões do período que a grade está mostrando.
+   *
+   * Os contadores dos filtros seguem este conjunto, e não o dia de hoje: o
+   * filtro age sobre a grade, então contar outra coisa fazia o número aparecer
+   * zerado com sessões visíveis na tela.
+   */
+  const visibleSessions =
+    view === "day"
+      ? getSessionsByDate(sessions, toISODate(cursor))
+      : view === "week"
+        ? weekSessions
+        : getSessionsByMonth(sessions, cursor.getFullYear(), cursor.getMonth());
   const weekRevenue = weekSessions
     .filter((s) => s.status !== "cancelled" && s.status !== "blocked")
     .reduce((sum, s) => sum + s.amount, 0);
@@ -236,10 +269,12 @@ export function AgendaPage() {
           </div>
           <div className="flex flex-col gap-[4px]">
             {filterDefs.map((f) => {
+              // Bloqueios de horário não são sessões: ficam fora da contagem.
+              const countable = visibleSessions.filter((s) => s.status !== "blocked");
               const count =
                 f.value === "all"
-                  ? todaySessions.length
-                  : todaySessions.filter((s) => s.status === f.value).length;
+                  ? countable.length
+                  : countable.filter((s) => s.status === f.value).length;
               const isActive = filter === f.value;
               return (
                 <button
@@ -397,6 +432,24 @@ export function AgendaPage() {
           </div>
 
           <div className="flex items-center gap-[10px]">
+            {/* Atalho para os horários definidos no onboarding, junto da grade
+                que eles controlam — em vez de escondido em Configurações. */}
+            <Tooltip delayDuration={150}>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => setAvailabilityOpen(true)}
+                  aria-label="Editar disponibilidade"
+                  className="size-[40px] rounded-[8px] border border-[#efefef] bg-white hover:bg-[#fafafa] hover:border-[#d4d4d4] flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <Gear size={16} weight="bold" className="text-[#65635a]" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={6}>
+                Editar disponibilidade
+              </TooltipContent>
+            </Tooltip>
+
             {/* View switcher */}
             <div className="flex items-center bg-white rounded-[10px] border border-[#efefef] p-[3px]">
               {(["day", "week", "month"] as ViewMode[]).map((v) => (
@@ -435,6 +488,7 @@ export function AgendaPage() {
           <WeekView
             weekStart={weekStart}
             sessions={getSessionsByWeek(sessions, weekStart)}
+            availability={availability}
             filter={filter}
             onSelectSession={(s) => {
               setSelectedSession(s);
@@ -454,6 +508,7 @@ export function AgendaPage() {
           <DayView
             date={cursor}
             sessions={getSessionsByDate(sessions, toISODate(cursor))}
+            availability={availability}
             filter={filter}
             onSelectSession={(s) => {
               setSelectedSession(s);
@@ -481,6 +536,13 @@ export function AgendaPage() {
           />
         )}
       </div>
+
+      <AvailabilityModal
+        open={availabilityOpen}
+        availability={availability}
+        onClose={() => setAvailabilityOpen(false)}
+        onSaved={refreshProfile}
+      />
 
       {/* Right detail panel */}
       {selectedSession && (

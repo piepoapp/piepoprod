@@ -7,7 +7,34 @@ import { ptBR } from "date-fns/locale";
 import { format, parse } from "date-fns";
 import type { Patient } from "../../data/mockData";
 import { listPatients } from "../../../lib/api/patients";
-import type { Session } from "../../data/agendaData";
+import { isPastSlot, toISODate, type Session } from "../../data/agendaData";
+
+function todayISO() {
+  return toISODate(new Date());
+}
+
+/** Meia-noite de hoje — limite inferior do date picker. */
+function startOfToday() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/**
+ * Primeiro momento ainda agendável: a próxima hora cheia dentro do expediente
+ * ou, se o dia já acabou, o começo do dia seguinte. Sem isso o modal abriria
+ * às 15h com "hoje 09:00" — já no passado e com o botão travado.
+ */
+function defaultSlot(): { date: string; time: string } {
+  const now = new Date();
+  const next = now.getHours() + 1;
+  if (next <= 21) {
+    return { date: toISODate(now), time: `${String(Math.max(next, 7)).padStart(2, "0")}:00` };
+  }
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return { date: toISODate(tomorrow), time: "09:00" };
+}
 
 interface Props {
   open: boolean;
@@ -65,9 +92,10 @@ export function NewSessionModal({
 
   useEffect(() => {
     if (open) {
+      const fallback = defaultSlot();
       setPatientId(initialPatientId ?? "");
-      setDate(initialDate ?? new Date().toISOString().slice(0, 10));
-      setTime(initialTime ?? "09:00");
+      setDate(initialDate ?? fallback.date);
+      setTime(initialTime ?? fallback.time);
       setDuration("50");
       setModality("online");
       setConfirmation(null);
@@ -88,7 +116,10 @@ export function NewSessionModal({
       overlap(time, endTime, s.startTime, s.endTime),
   );
   const patient = patients.find((p) => p.id === patientId);
-  const ready = !!patientId && !!date && !!time;
+  // Nem data nem horário podem estar no passado.
+  const isPastDate = !!date && date < todayISO();
+  const isPastMoment = !!date && !!time && isPastSlot(date, time);
+  const ready = !!patientId && !!date && !!time && !isPastMoment;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -270,6 +301,7 @@ export function NewSessionModal({
                       locale={ptBR}
                       selected={date ? parse(date, "yyyy-MM-dd", new Date()) : undefined}
                       onSelect={(d) => d && setDate(format(d, "yyyy-MM-dd"))}
+                      disabled={{ before: startOfToday() }}
                       initialFocus
                       className="font-['Geist',sans-serif]"
                       classNames={{
@@ -323,6 +355,19 @@ export function NewSessionModal({
               />
             </Field>
           </div>
+
+          {/* O modal pode abrir já com data/horário passados, então o aviso
+              precisa dizer qual dos dois está errado. */}
+          {isPastMoment && (
+            <div className="flex items-start gap-[10px] w-full bg-[#fef2f2] border border-[#fecaca] rounded-[10px] px-[14px] py-[10px] -mt-[12px]">
+              <Info size={16} weight="bold" className="text-[#b91c1c] shrink-0 mt-[2px]" />
+              <p className="font-['Geist',sans-serif] font-normal text-[14px] leading-[18px] text-[#991b1b]">
+                {isPastDate
+                  ? "Não é possível agendar em uma data que já passou. Escolha hoje ou uma data futura."
+                  : "Este horário de hoje já passou. Escolha um horário à frente."}
+              </p>
+            </div>
+          )}
 
           {conflict && (
             <div className="flex items-start gap-[10px] w-full bg-[#fef2f2] border border-[#fecaca] rounded-[10px] px-[14px] py-[10px] -mt-[12px]">

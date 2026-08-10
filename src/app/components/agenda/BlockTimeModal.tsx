@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar as CalendarPicker } from "../ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { format, parse } from "date-fns";
-import type { Session } from "../../data/agendaData";
+import { toISODate, type Session } from "../../data/agendaData";
 
 interface Props {
   open: boolean;
@@ -44,7 +44,8 @@ export function BlockTimeModal({
 
   useEffect(() => {
     if (open) {
-      setDate(initialDate ?? new Date().toISOString().slice(0, 10));
+      // toISOString() é UTC: à noite, no Brasil, cairia no dia seguinte.
+      setDate(initialDate ?? toISODate(new Date()));
       setStartTime(initialTime ?? "12:00");
       setEndTime(addOneHour(initialTime ?? "12:00"));
       setReason("Almoço");

@@ -57,6 +57,15 @@ export interface OnboardingData {
   defaultSessionDuration: number;
 }
 
+/** Edição avulsa da disponibilidade, feita direto pela Agenda. */
+export async function updateAvailability(
+  userId: string,
+  availability: Availability,
+): Promise<void> {
+  const { error } = await supabase.from("profiles").update({ availability }).eq("id", userId);
+  if (error) throw error;
+}
+
 export async function completeOnboarding(userId: string, data: OnboardingData): Promise<void> {
   const { error } = await supabase
     .from("profiles")

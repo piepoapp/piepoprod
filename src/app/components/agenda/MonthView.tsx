@@ -1,4 +1,5 @@
 import {
+  isPastDay,
   toISODate,
   getSessionsByMonth,
   statusMeta,
@@ -46,13 +47,17 @@ export function MonthView({ monthDate, sessions, onSelectDate, filter = "all" }:
           const inMonth = d.getMonth() === month;
           const isToday = iso === today;
           const cellSessions = monthSessions.filter((s) => s.date === iso && (filter === "all" || s.status === filter));
+          // O clique aqui navega para o dia (consulta), não cria sessão — por
+          // isso dias passados continuam clicáveis, apenas recuam visualmente.
+          const past = isPastDay(iso);
           return (
             <button
               key={i}
               type="button"
               onClick={() => onSelectDate(d)}
+              title={past ? "Data passada — somente consulta" : undefined}
               className={`min-h-[110px] border-r border-b border-[#f5f5f5] p-[8px] text-left flex flex-col gap-[4px] hover:bg-[#f8faff] transition-colors cursor-pointer ${
-                inMonth ? "bg-white" : "bg-[#fafafa]"
+                !inMonth ? "bg-[#fafafa]" : past ? "bg-[#fafafa]" : "bg-white"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -60,9 +65,9 @@ export function MonthView({ monthDate, sessions, onSelectDate, filter = "all" }:
                   className={`font-['Geist',sans-serif] font-medium text-[14px] leading-[16px] ${
                     isToday
                       ? "size-[24px] rounded-full bg-[#317dff] text-white flex items-center justify-center"
-                      : inMonth
-                      ? "text-black"
-                      : "text-[#a1a1aa]"
+                      : !inMonth || past
+                      ? "text-[#a1a1aa]"
+                      : "text-black"
                   }`}
                 >
                   {d.getDate()}

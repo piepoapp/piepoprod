@@ -106,6 +106,38 @@ export function isAvailabilityComplete(availability: Availability): boolean {
   );
 }
 
+/** getDay() é 0 = domingo; esta lista traduz para as chaves usadas aqui. */
+const keyByWeekday: WeekdayKey[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+
+export function weekdayKeyFromISO(dateISO: string): WeekdayKey {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  return keyByWeekday[new Date(y, m - 1, d, 12, 0, 0).getDay()];
+}
+
+/**
+ * O profissional atende neste dia?
+ *
+ * Sem disponibilidade configurada (conta antiga, onboarding não concluído) nada
+ * é bloqueado — é melhor a agenda ficar permissiva do que inutilizável.
+ */
+export function isDayAvailable(availability: Availability | null, dateISO: string): boolean {
+  if (!availability) return true;
+  return availability[weekdayKeyFromISO(dateISO)].length > 0;
+}
+
+/** O horário cai dentro de algum bloco de atendimento daquele dia? */
+export function isSlotAvailable(
+  availability: Availability | null,
+  dateISO: string,
+  time: string,
+): boolean {
+  if (!availability) return true;
+  const blocks = availability[weekdayKeyFromISO(dateISO)];
+  if (blocks.length === 0) return false;
+  const minutes = toMinutes(time);
+  return blocks.some((b) => minutes >= toMinutes(b.start) && minutes < toMinutes(b.end));
+}
+
 /**
  * Faixa de horas que a agenda precisa mostrar para caber toda a disponibilidade.
  * Usado para substituir o 7h–21h fixo das views de semana e dia.

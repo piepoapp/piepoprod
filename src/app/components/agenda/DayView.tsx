@@ -1,11 +1,20 @@
-import { CurrencyCircleDollar, Clock, CheckCircle } from "@phosphor-icons/react";
+import { CurrencyCircleDollar, Clock, CheckCircle, ClockCounterClockwise } from "@phosphor-icons/react";
 import {
+  isPastDay,
+  isPastSlot,
   toISODate,
   weekDayLabels,
   monthLabels,
   type Session,
   type SessionStatus,
 } from "../../data/agendaData";
+import {
+  availabilityBounds,
+  isDayAvailable,
+  isSlotAvailable,
+  type Availability,
+} from "../../data/availability";
+import { EmptyState } from "../EmptyState";
 import { SessionBlock } from "./SessionBlock";
 import { SlotSelection } from "./SlotSelection";
 import { QuickBlockPanel } from "./QuickBlockPanel";
@@ -13,6 +22,8 @@ import { QuickBlockPanel } from "./QuickBlockPanel";
 interface Props {
   date: Date;
   sessions: Session[];
+  /** Disponibilidade definida no onboarding; null = sem restrição. */
+  availability: Availability | null;
   onSelectSession: (s: Session) => void;
   onSelectSlot: (date: string, time: string) => void;
   selectedSlot: { date: string; time: string } | null;
@@ -25,13 +36,12 @@ interface Props {
   filter?: SessionStatus | "all";
 }
 
-const START_HOUR = 7;
-const END_HOUR = 21;
 const HOUR_HEIGHT = 72;
 
 export function DayView({
   date,
   sessions,
+  availability,
   onSelectSession,
   onSelectSlot,
   selectedSlot,
@@ -45,8 +55,30 @@ export function DayView({
 }: Props) {
   const iso = toISODate(date);
   const isToday = iso === toISODate(new Date());
+  const dayPast = isPastDay(iso);
+  const dayOff = !isDayAvailable(availability, iso);
+  const { startHour: START_HOUR, endHour: END_HOUR } = availabilityBounds(availability);
   const hours = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
   const daySessions = filter === "all" ? sessions : sessions.filter((s) => s.status === filter);
+  const label = `${weekDayLabels[date.getDay() === 0 ? 6 : date.getDay() - 1]}, ${date.getDate()} de ${monthLabels[date.getMonth()].toLowerCase()}`;
+
+  // Sem sessões e sem nada a oferecer: a grade só mostraria slots inertes.
+  if (daySessions.length === 0 && (dayPast || dayOff)) {
+    return (
+      <div className="flex flex-col w-full bg-white rounded-[12px] border border-[#efefef]">
+        <EmptyState
+          className="min-h-[420px]"
+          icon={<ClockCounterClockwise size={20} weight="bold" />}
+          title={dayPast ? "Nenhum atendimento neste dia" : "Você não atende neste dia"}
+          description={
+            dayPast
+              ? `${label} já passou e não teve sessões registradas. Não é possível criar agendamentos em datas passadas.`
+              : `${label} está fora dos dias de atendimento que você definiu. Ajuste sua disponibilidade para agendar aqui.`
+          }
+        />
+      </div>
+    );
+  }
 
   const totalForecast = daySessions
     .filter((s) => s.status !== "cancelled" && s.status !== "blocked")
@@ -73,16 +105,27 @@ export function DayView({
               </div>
             ))}
           </div>
-          <div className="relative border-l border-[#f5f5f5]">
-            {hours.map((h) => (
-              <button
-                key={h}
-                type="button"
-                onClick={() => onSelectSlot(iso, `${h.toString().padStart(2, "0")}:00`)}
-                style={{ height: HOUR_HEIGHT }}
-                className="block w-full border-b border-[#f5f5f5] hover:bg-[#f8faff] transition-colors cursor-pointer"
-              />
-            ))}
+          <div className={`relative border-l border-[#f5f5f5] ${dayPast || dayOff ? "bg-[#fafafa]" : ""}`}>
+            {hours.map((h) => {
+              const time = `${h.toString().padStart(2, "0")}:00`;
+              const blocked = isPastSlot(iso, time) || !isSlotAvailable(availability, iso, time);
+              return blocked ? (
+                <div
+                  key={h}
+                  aria-disabled="true"
+                  style={{ height: HOUR_HEIGHT }}
+                  className="block w-full border-b border-[#f5f5f5] bg-[#f4f4f5]/60 cursor-not-allowed"
+                />
+              ) : (
+                <button
+                  key={h}
+                  type="button"
+                  onClick={() => onSelectSlot(iso, time)}
+                  style={{ height: HOUR_HEIGHT }}
+                  className="block w-full border-b border-[#f5f5f5] hover:bg-[#f8faff] transition-colors cursor-pointer"
+                />
+              );
+            })}
             {daySessions.map((s) => (
               <SessionBlock
                 key={s.id}
