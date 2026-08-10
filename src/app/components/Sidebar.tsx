@@ -2,6 +2,7 @@ import svgPaths from "../../imports/svg-ifwz00yaeh";
 import { useLocation, useNavigate } from "react-router";
 import { Question, SignOut, DotsThree } from "@phosphor-icons/react";
 import { useAuth } from "../../lib/auth/AuthProvider";
+import { BrandLogo } from "./BrandLogo";
 import { DropdownMenu } from "./DropdownMenu";
 
 function getInitials(name: string): string {
@@ -81,9 +82,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="h-[64px] shrink-0 px-[16px] flex items-center border-b border-[#e6e6e1] box-border">
         <div className="pl-[8px] flex items-center">
-          <p className="font-['Confiteria_Script',sans-serif] font-bold text-[#0055e7] text-[48px] leading-none tracking-[0.96px]">
-            o
-          </p>
+          <BrandLogo size={32} />
         </div>
       </div>
 

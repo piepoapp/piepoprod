@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { BrandLogo } from "./BrandLogo";
 
 interface AuthLayoutProps {
   title: string;
@@ -11,9 +12,7 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
     <div className="min-h-screen flex flex-col items-center justify-center gap-[24px] bg-[#fafafa] font-['Geist',sans-serif] px-[24px]">
       <div className="w-[512px] max-w-full flex flex-col gap-[24px]">
         <div className="flex justify-center">
-          <p className="font-['Confiteria_Script',sans-serif] font-bold text-[#0055e7] text-[40px] leading-none tracking-[0.96px]">
-            o
-          </p>
+          <BrandLogo size={44} />
         </div>
         <div className="bg-white rounded-[16px] border border-[#efefef] p-[32px] flex flex-col gap-[24px]">
           <div className="flex flex-col gap-[4px] items-center text-center">

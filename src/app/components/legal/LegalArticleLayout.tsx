@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { ArrowLeft } from "@phosphor-icons/react";
+import { BrandLogo } from "../BrandLogo";
 
 export interface LegalSection {
   id: string;
@@ -55,9 +56,7 @@ export function LegalArticleLayout({ title, lastUpdated, notice, sections }: Leg
       {/* Faixa superior: logo + retorno ao cadastro, presa no topo para navegar mesmo com scroll longo */}
       <div className="sticky top-0 z-10 h-[64px] bg-white border-b border-[#e6e6e1] flex items-center px-[24px] md:px-[40px]">
         <div className="w-full max-w-[1120px] mx-auto flex items-center justify-between">
-          <p className="font-['Confiteria_Script',sans-serif] font-bold text-[#0055e7] text-[28px] leading-none tracking-[0.96px]">
-            o
-          </p>
+          <BrandLogo size={26} />
           <Link
             to="/signup"
             className="inline-flex items-center gap-[6px] font-['Geist',sans-serif] font-medium text-[14px] text-[#75787d] hover:text-[#317dff] transition-colors"
