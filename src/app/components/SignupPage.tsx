@@ -16,7 +16,6 @@ interface FormValues {
   email: string;
   phone: string;
   password: string;
-  confirmPassword: string;
   acceptedTerms: boolean;
 }
 
@@ -39,10 +38,8 @@ export function SignupPage() {
   if (user && !signingUp) return <Navigate to="/" replace />;
 
   const passwordValue = watch("password");
-  const confirmValue = watch("confirmPassword");
   const acceptedTerms = watch("acceptedTerms");
-  const passwordsOk = !!passwordValue && passwordValue.length >= 8 && passwordValue === confirmValue;
-  const ready = passwordsOk && !!acceptedTerms;
+  const ready = !!passwordValue && passwordValue.length >= 8 && !!acceptedTerms;
 
   async function onSubmit(data: FormValues) {
     setSubmitting(true);
@@ -92,13 +89,13 @@ export function SignupPage() {
           id="phone"
           name="phone"
           control={control}
-          label="Telefone"
+          label="WhatsApp"
           icon={Phone}
           placeholder="(00) 00000-0000"
           error={errors.phone}
           rules={{
-            required: "Informe seu telefone",
-            pattern: { value: /^\(\d{2}\) \d{5}-\d{4}$/, message: "Telefone inválido" },
+            required: "Informe seu WhatsApp",
+            pattern: { value: /^\(\d{2}\) \d{5}-\d{4}$/, message: "Número inválido" },
           }}
         />
 
@@ -117,19 +114,6 @@ export function SignupPage() {
           />
           <PasswordStrengthMeter password={passwordValue ?? ""} />
         </div>
-
-        <AuthField
-          id="confirmPassword"
-          label="Confirmar senha"
-          type="password"
-          icon={Lock}
-          placeholder="Repita a senha"
-          error={errors.confirmPassword}
-          {...register("confirmPassword", {
-            required: "Confirme a senha",
-            validate: (value) => value === watch("password") || "As senhas não coincidem",
-          })}
-        />
 
         <Controller
           name="acceptedTerms"

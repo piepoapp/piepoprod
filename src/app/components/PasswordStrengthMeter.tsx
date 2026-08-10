@@ -33,12 +33,14 @@ export function PasswordStrengthMeter({ password }: { password: string }) {
   const active = scoreStyles[score];
 
   return (
-    <div className="flex flex-col gap-[6px]">
+    <div className="flex flex-col gap-[6px] items-start">
+      {/* Segmentos de largura fixa: a barra indica força, não progresso —
+          esticá-la na largura do campo dava peso visual demais. */}
       <div className="flex gap-[4px]">
         {[1, 2, 3].map((seg) => (
           <div
             key={seg}
-            className={`flex-1 h-[4px] rounded-full transition-colors ${seg <= score ? active.bar : "bg-[#e5e7eb]"}`}
+            className={`w-[12px] h-[4px] rounded-full transition-colors ${seg <= score ? active.bar : "bg-[#e5e7eb]"}`}
           />
         ))}
       </div>
