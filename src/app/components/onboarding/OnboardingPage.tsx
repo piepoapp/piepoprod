@@ -133,18 +133,6 @@ export function OnboardingPage() {
             </button>
           )}
 
-          {step > 1 && step < TOTAL_STEPS && (
-            <button
-              type="button"
-              onClick={() => setStep(step + 1)}
-              className="h-[40px] flex items-center justify-center px-[16px] rounded-[8px] border border-[#e4e4e7] bg-white hover:bg-[#f9fafb] transition-colors cursor-pointer"
-            >
-              <span className="font-['Geist',sans-serif] font-medium text-[14px] leading-[20px] text-[#65635a]">
-                Pular
-              </span>
-            </button>
-          )}
-
           <button
             type="button"
             onClick={step === TOTAL_STEPS ? handleFinish : handleNext}
