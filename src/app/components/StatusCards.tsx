@@ -71,8 +71,8 @@ interface StatusCardsProps {
   scheduledDesc: string;
   completed: number;
   completedDesc: string;
-  rescheduled: number;
-  rescheduledDesc: string;
+  awaiting: number;
+  awaitingDesc: string;
   loading?: boolean;
 }
 
@@ -83,8 +83,8 @@ export function StatusCards({
   scheduledDesc,
   completed,
   completedDesc,
-  rescheduled,
-  rescheduledDesc,
+  awaiting,
+  awaitingDesc,
   loading = false,
 }: StatusCardsProps) {
   const cards: StatusCardProps[] = [
@@ -113,9 +113,11 @@ export function StatusCards({
       iconBg: "rgba(0,153,102,0.1)",
     },
     {
-      label: "Sessões remarcadas",
-      value: rescheduled,
-      description: rescheduledDesc,
+      // Não existe registro de remarcação no modelo de dados; o que dá para
+      // afirmar é quantas sessões seguem aguardando confirmação.
+      label: "Aguardando confirmação",
+      value: awaiting,
+      description: awaitingDesc,
       iconPath: svgPaths.pd712180,
       iconColor: "#E7000B",
       iconBg: "rgba(231,0,11,0.1)",

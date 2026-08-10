@@ -311,10 +311,19 @@ function AppointmentRow({ appointment, onView }: { appointment: Appointment; onV
 
 interface AppointmentsListProps {
   appointments: Appointment[];
+  /** Já existe algum paciente cadastrado. */
+  hasPatients?: boolean;
+  /** Já existe alguma sessão, mesmo que passada ou cancelada. */
+  hasSessions?: boolean;
   loading?: boolean;
 }
 
-export function AppointmentsList({ appointments, loading = false }: AppointmentsListProps) {
+export function AppointmentsList({
+  appointments,
+  hasPatients = false,
+  hasSessions = false,
+  loading = false,
+}: AppointmentsListProps) {
   const [modalAppointment, setModalAppointment] = useState<Appointment | null>(null);
   const navigate = useNavigate();
   const emptyHint = useEmptyStateHint("dashboard.appointments", loading, appointments.length === 0);
@@ -351,16 +360,42 @@ export function AppointmentsList({ appointments, loading = false }: Appointments
             <ListSkeleton rows={4} />
           )
         ) : appointments.length === 0 ? (
-          <EmptyState
-            image={emptyAppointmentsImage}
-            title="Nenhum atendimento agendado"
-            description="Você ainda não tem atendimentos agendados. Cadastre um paciente e agende sua primeira sessão. Seus próximos atendimentos aparecerão aqui."
-            action={{
-              label: "Cadastrar primeiro paciente",
-              icon: <PlusCircle size={16} weight="bold" />,
-              onClick: () => navigate("/pacientes?novo=1"),
-            }}
-          />
+          !hasPatients ? (
+            <EmptyState
+              image={emptyAppointmentsImage}
+              title="Nenhum atendimento agendado"
+              description="Você ainda não tem pacientes. Cadastre o primeiro para começar a agendar sessões — seus próximos atendimentos aparecerão aqui."
+              action={{
+                label: "Cadastrar primeiro paciente",
+                icon: <PlusCircle size={16} weight="bold" />,
+                onClick: () => navigate("/pacientes?novo=1"),
+              }}
+            />
+          ) : !hasSessions ? (
+            <EmptyState
+              image={emptyAppointmentsImage}
+              title="Nenhuma sessão agendada"
+              description="Seus pacientes já estão cadastrados. Agende a primeira sessão para acompanhar os atendimentos por aqui."
+              action={{
+                label: "Agendar primeira sessão",
+                icon: <PlusCircle size={16} weight="bold" />,
+                onClick: () => navigate("/agenda"),
+              }}
+            />
+          ) : (
+            /* Já houve sessões, mas nenhuma daqui para a frente — o caso em que
+               mandar "cadastre seu primeiro paciente" confunde mais do que ajuda. */
+            <EmptyState
+              image={emptyAppointmentsImage}
+              title="Nenhum atendimento futuro"
+              description="Todas as suas sessões já aconteceram. Agende a próxima para ela aparecer aqui."
+              action={{
+                label: "Agendar sessão",
+                icon: <PlusCircle size={16} weight="bold" />,
+                onClick: () => navigate("/agenda"),
+              }}
+            />
+          )
         ) : (
           appointments.map((apt) => (
             <AppointmentRow

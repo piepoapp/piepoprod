@@ -37,6 +37,7 @@ function sessionToAppointment(s: Session): Appointment {
 export function DashboardPage() {
   const { user } = useAuth();
   const [activePatients, setActivePatients] = useState(0);
+  const [totalPatients, setTotalPatients] = useState(0);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [patientsLoading, setPatientsLoading] = useState(true);
   const [sessionsLoading, setSessionsLoading] = useState(true);
@@ -44,7 +45,10 @@ export function DashboardPage() {
 
   useEffect(() => {
     listPatients()
-      .then((patients) => setActivePatients(patients.filter((p) => p.status === "ativo").length))
+      .then((patients) => {
+        setActivePatients(patients.filter((p) => p.status === "ativo").length);
+        setTotalPatients(patients.length);
+      })
       .catch(() => {})
       .finally(() => setPatientsLoading(false));
     listSessions()
@@ -65,16 +69,26 @@ export function DashboardPage() {
   }, []);
 
   const todayIso = toISODate(new Date());
-  const scheduled = sessions.filter(
-    (s) => s.date >= todayIso && s.status !== "cancelled" && s.status !== "blocked",
-  ).length;
+
+  // "Futura" exclui sessões já marcadas como realizadas, senão uma sessão de
+  // hoje que acabou de ser registrada continuaria contando como agendada.
+  const isUpcoming = (s: Session) =>
+    s.date >= todayIso &&
+    s.status !== "cancelled" &&
+    s.status !== "blocked" &&
+    s.status !== "completed";
+
+  const scheduled = sessions.filter(isUpcoming).length;
+  // Realizada = marcada explicitamente, ou já passou sem ter sido cancelada.
   const completed = sessions.filter(
-    (s) => s.date < todayIso && (s.status === "confirmed" || s.status === "first"),
+    (s) =>
+      s.status === "completed" ||
+      (s.date < todayIso && (s.status === "confirmed" || s.status === "first")),
   ).length;
-  const rescheduled = sessions.filter((s) => s.date < todayIso && s.status === "pending").length;
+  const awaiting = sessions.filter((s) => s.status === "pending").length;
 
   const upcoming = sessions
-    .filter((s) => s.date >= todayIso && s.status !== "cancelled" && s.status !== "blocked")
+    .filter(isUpcoming)
     .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime))
     .slice(0, 5)
     .map(sessionToAppointment);
@@ -112,14 +126,19 @@ export function DashboardPage() {
         scheduledDesc="sessões futuras"
         completed={completed}
         completedDesc="atendimentos concluídos"
-        rescheduled={rescheduled}
-        rescheduledDesc="sessões reagendadas"
+        awaiting={awaiting}
+        awaitingDesc="sessões a confirmar"
         loading={cardsLoading}
       />
 
       {/* Content Overview */}
       <div className="flex gap-[16px] items-start w-full">
-        <AppointmentsList appointments={upcoming} loading={sessionsPending} />
+        <AppointmentsList
+          appointments={upcoming}
+          hasPatients={totalPatients > 0}
+          hasSessions={sessions.length > 0}
+          loading={sessionsPending}
+        />
         <WeeklyChart data={weeklyData} loading={sessionsPending} />
       </div>
     </div>
