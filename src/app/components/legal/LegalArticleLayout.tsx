@@ -56,7 +56,7 @@ export function LegalArticleLayout({ title, lastUpdated, notice, sections }: Leg
       {/* Faixa superior: logo + retorno ao cadastro, presa no topo para navegar mesmo com scroll longo */}
       <div className="sticky top-0 z-10 h-[64px] bg-white border-b border-[#e6e6e1] flex items-center px-[24px] md:px-[40px]">
         <div className="w-full max-w-[1120px] mx-auto flex items-center justify-between">
-          <BrandLogo size={26} />
+          <BrandLogo size={20} />
           <Link
             to="/signup"
             className="inline-flex items-center gap-[6px] font-['Geist',sans-serif] font-medium text-[14px] text-[#75787d] hover:text-[#317dff] transition-colors"

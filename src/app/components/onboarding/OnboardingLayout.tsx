@@ -29,7 +29,7 @@ export function OnboardingLayout({
     <div className="min-h-screen flex flex-col items-center justify-center gap-[24px] bg-[#fafafa] font-['Geist',sans-serif] px-[24px] py-[40px]">
       <div className="w-[512px] max-w-full flex flex-col gap-[24px]">
         <div className="flex justify-center">
-          <BrandLogo size={44} />
+          <BrandLogo size={32} />
         </div>
 
         <div className="bg-white rounded-[16px] border border-[#efefef] p-[32px] flex flex-col gap-[24px]">

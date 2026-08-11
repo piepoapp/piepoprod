@@ -82,7 +82,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="h-[64px] shrink-0 px-[16px] flex items-center border-b border-[#e6e6e1] box-border">
         <div className="pl-[8px] flex items-center">
-          <BrandLogo size={32} />
+          <BrandLogo size={28} />
         </div>
       </div>
 
