@@ -1,4 +1,4 @@
-export interface Appointment {
+﻿export interface Appointment {
   id: string;
   initials: string;
   name: string;
@@ -9,14 +9,6 @@ export interface Appointment {
   highlighted?: boolean;
 }
 
-export interface Notification {
-  id: string;
-  title: string;
-  description: string;
-  time: string;
-  read: boolean;
-  type: "session" | "cancel" | "new" | "reminder";
-}
 
 // ===== PATIENTS DATA =====
 
@@ -242,48 +234,5 @@ export const patients: Patient[] = [
     totalSessions: 4,
     frequency: "Semanal",
     notes: "Adolescente tardio. Orientação vocacional e autoconhecimento.",
-  },
-];
-
-export const notifications: Notification[] = [
-  {
-    id: "1",
-    title: "Sessão em 30 minutos",
-    description: "Roberto Costa - Google Meet",
-    time: "Agora",
-    read: false,
-    type: "reminder",
-  },
-  {
-    id: "2",
-    title: "Sessão cancelada",
-    description: "Maria Santos cancelou a sessão de amanhã",
-    time: "Há 2h",
-    read: false,
-    type: "cancel",
-  },
-  {
-    id: "3",
-    title: "Novo paciente cadastrado",
-    description: "Lucas Ribeiro realizou o pré-cadastro",
-    time: "Há 5h",
-    read: false,
-    type: "new",
-  },
-  {
-    id: "4",
-    title: "Sessão remarcada",
-    description: "Paula Monteiro remarcou para 25/12",
-    time: "Ontem",
-    read: true,
-    type: "session",
-  },
-  {
-    id: "5",
-    title: "Lembrete de pagamento",
-    description: "3 pacientes com pagamento pendente",
-    time: "Ontem",
-    read: true,
-    type: "reminder",
   },
 ];

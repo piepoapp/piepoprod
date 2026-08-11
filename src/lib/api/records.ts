@@ -51,6 +51,31 @@ export async function listRecordsByPatient(patientId: string): Promise<PatientRe
   return (data as RecordRow[]).map(mapRow);
 }
 
+export interface RecordRef {
+  id: string;
+  patientId: string;
+  sessionId: string | null;
+  isDraft: boolean;
+}
+
+/**
+ * Só os campos necessários para calcular pendências (quais sessões já têm
+ * evolução, quantos rascunhos existem). Evita trazer o conteúdo clínico
+ * inteiro para uma contagem.
+ */
+export async function listRecordRefs(): Promise<RecordRef[]> {
+  const { data, error } = await supabase
+    .from("patient_records")
+    .select("id, patient_id, session_id, is_draft");
+  if (error) throw error;
+  return (data as Pick<RecordRow, "id" | "patient_id" | "session_id" | "is_draft">[]).map((r) => ({
+    id: r.id,
+    patientId: r.patient_id,
+    sessionId: r.session_id,
+    isDraft: r.is_draft,
+  }));
+}
+
 export interface NewRecordInput {
   patientId: string;
   sessionId?: string | null;
