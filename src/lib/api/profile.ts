@@ -57,6 +57,32 @@ export interface OnboardingData {
   defaultSessionDuration: number;
 }
 
+/** Campos do perfil editáveis em Configurações. */
+export interface ProfilePatch {
+  fullName?: string;
+  crp?: string;
+  phone?: string;
+  availability?: Availability;
+  defaultSessionPrice?: number | null;
+  defaultSessionDuration?: number;
+}
+
+export async function updateProfile(userId: string, patch: ProfilePatch): Promise<void> {
+  const row: Record<string, unknown> = {};
+  if (patch.fullName !== undefined) row.full_name = patch.fullName;
+  if (patch.crp !== undefined) row.crp = patch.crp;
+  if (patch.phone !== undefined) row.phone = patch.phone;
+  if (patch.availability !== undefined) row.availability = patch.availability;
+  if (patch.defaultSessionPrice !== undefined) row.default_session_price = patch.defaultSessionPrice;
+  if (patch.defaultSessionDuration !== undefined) {
+    row.default_session_duration = patch.defaultSessionDuration;
+  }
+  if (Object.keys(row).length === 0) return;
+
+  const { error } = await supabase.from("profiles").update(row).eq("id", userId);
+  if (error) throw error;
+}
+
 /** Edição avulsa da disponibilidade, feita direto pela Agenda. */
 export async function updateAvailability(
   userId: string,

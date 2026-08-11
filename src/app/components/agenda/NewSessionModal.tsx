@@ -7,6 +7,7 @@ import { ptBR } from "date-fns/locale";
 import { format, parse } from "date-fns";
 import type { Patient } from "../../data/mockData";
 import { listPatients } from "../../../lib/api/patients";
+import { useAuth } from "../../../lib/auth/AuthProvider";
 import { isPastSlot, toISODate, type Session } from "../../data/agendaData";
 
 function todayISO() {
@@ -64,6 +65,7 @@ export function NewSessionModal({
   onClose,
   onSave,
 }: Props) {
+  const { profile } = useAuth();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [patientsLoading, setPatientsLoading] = useState(true);
   const [patientId, setPatientId] = useState(initialPatientId ?? "");
@@ -96,15 +98,21 @@ export function NewSessionModal({
       setPatientId(initialPatientId ?? "");
       setDate(initialDate ?? fallback.date);
       setTime(initialTime ?? fallback.time);
-      setDuration("50");
+      // Padrões definidos pelo profissional em Configurações; os literais só
+      // valem para quem ainda não configurou nada.
+      setDuration(String(profile?.defaultSessionDuration ?? 50));
       setModality("online");
       setConfirmation(null);
       setCopied(false);
       setRecurrence("Semanal");
-      setAmount("220");
+      setAmount(
+        profile?.defaultSessionPrice != null
+          ? profile.defaultSessionPrice.toFixed(2).replace(".", ",")
+          : "",
+      );
       setNotes("");
     }
-  }, [open, initialDate, initialTime, initialPatientId]);
+  }, [open, initialDate, initialTime, initialPatientId, profile]);
 
   if (!open) return null;
 

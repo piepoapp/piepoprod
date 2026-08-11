@@ -4,6 +4,7 @@ import { DashboardPage } from "./components/DashboardPage";
 import { PatientsPage } from "./components/PatientsPage";
 import { PatientRecordPage } from "./components/prontuario/PatientRecordPage";
 import { AgendaPage } from "./components/AgendaPage";
+import { SettingsPage } from "./components/settings/SettingsPage";
 import { LoginPage } from "./components/LoginPage";
 import { SignupPage } from "./components/SignupPage";
 import { ForgotPasswordPage } from "./components/ForgotPasswordPage";
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
           { path: "pacientes", Component: PatientsPage },
           { path: "pacientes/:id", Component: PatientRecordPage },
           { path: "agenda", Component: AgendaPage },
+          { path: "configuracoes", Component: SettingsPage },
         ],
       },
     ],
